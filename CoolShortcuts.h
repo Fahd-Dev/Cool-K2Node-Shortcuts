@@ -17,7 +17,7 @@
 
 /** 
  * Declare with implementation for a K2Node 
- * IMPORTANT: Use this macro in the ".h" file. Will not work in the ".cpp" file.
+ * IMPORTANT: Use this macro in The ".h". Will not work in the ".cpp".
  * REQUIRES: "BlueprintActionDatabaseRegistrar.h" and "BlueprintNodeSpawner.h"
  * WARNING: This macro could INCREASE the compiling time, if your project have a lot of K2Nodes, consider using these macros: DECLARE_K2NODE_ONLY with IMPLEMENT_K2NODE_ONLY
  */
@@ -43,7 +43,7 @@
 /**
  * Declares GetNodeTitle, GetMenuCategory, GetTooltipText, GetMenuActions Functions
  * NOTE: This macro doesn't do anything without implementation
- * RECOMMENDATION: you can use the IMPLEMENT_K2NODE_ONLY Macro in the ".cpp" file
+ * RECOMMENDATION: you can use the IMPLEMENT_K2NODE_ONLY Macro in the ".cpp"
  */
 #define DECLARE_K2NODE_ONLY \
     virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override; \
@@ -54,7 +54,7 @@
 /** 
  * Implements the GetNodeTitle, GetMenuCategory, GetTooltipText, GetMenuActions Functions
  * REQUIRES: "BlueprintActionDatabaseRegistrar.h" and "BlueprintNodeSpawner.h"
- * IMPORTANT: You must declare these functions in the ".h" file, you can just use the macro named DECLARE_K2NODE_ONLY in the header, IN ".cpp" ONLY
+ * IMPORTANT: You must declare these functions in the ".h", you can just use the macro named DECLARE_K2NODE_ONLY in the header, IN ".cpp" ONLY
  */
 #define IMPLEMENT_K2NODE_ONLY(ClassName, Title, Tooltip, Category) \
     FText ClassName::GetNodeTitle(ENodeTitleType::Type TitleType) const { \
