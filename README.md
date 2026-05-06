@@ -16,7 +16,7 @@
 	<sup>Files in this folder can be included using only their filename</sup>
    
 2. Put ``CoolShortcuts.h`` inside it
-3. Add this in your .build.cs at the top
+3. Add this in your ``.build.cs`` at the top
 ```c#
 using System.IO;
 ```
