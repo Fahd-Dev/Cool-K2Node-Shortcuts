@@ -3,7 +3,7 @@
 
 // This file has   V E R Y  C O O L   Shortcuts that will save you A LOT of time when creating K2Nodes
 
-/**
+/*
  * =========================================================================================
  * COMPATIBILITY:                                                                          |
  * This library was developed and tested on Unreal Engine 5.7.                             |
@@ -15,7 +15,7 @@
 
 #pragma once
 
-/** 
+/* 
  * Declare with implementation for a K2Node 
  * IMPORTANT: Use this macro in The ".h". Will not work in the ".cpp".
  * REQUIRES: "BlueprintActionDatabaseRegistrar.h" and "BlueprintNodeSpawner.h"
@@ -40,7 +40,7 @@
         } \
     }
 
-/**
+/*
  * Declares GetNodeTitle, GetMenuCategory, GetTooltipText, GetMenuActions Functions
  * NOTE: This macro doesn't do anything without implementation
  * RECOMMENDATION: you can use the IMPLEMENT_K2NODE_ONLY Macro in the ".cpp"
@@ -51,7 +51,7 @@
     virtual FText GetMenuCategory() const override; \
     virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
 
-/** 
+/* 
  * Implements the GetNodeTitle, GetMenuCategory, GetTooltipText, GetMenuActions Functions
  * REQUIRES: "BlueprintActionDatabaseRegistrar.h" and "BlueprintNodeSpawner.h"
  * IMPORTANT: You must declare these functions in the ".h", you can just use the macro named DECLARE_K2NODE_ONLY in the header, IN ".cpp" ONLY
@@ -75,7 +75,7 @@
         } \
     }
 
-/**
+/*
  * Will add two pins: an Input exec (PN_Execute) and an Output exec (PN_Then)
  * RECOMMENDATION: to connect them in the ExpandNode function you can use a macro named LINK_STANDARD_EXEC_PINS it will connect them for you
  */
@@ -98,7 +98,7 @@
 // there will be more macros for creating pins in the future, so stay tuned for updates.
 
 
-/**
+/*
  * Creates a "UK2Node_CallFunction*"" variable named After the Value you've put in the "NodeVarName"
  * Stores the specified NodeClass and NodeFunction inside it
  * 
@@ -110,7 +110,7 @@
     NodeVarName->SetFromFunction(NodeClass::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED(NodeClass, NodeFunction))); \
     NodeVarName->AllocateDefaultPins();
 
-/** 
+/* 
  * This will connect the PN_Execute & PN_Then Execs With the node in the Variable named after the "NodeName" Variable
  * RECOMMENDATION: you can use the CREATE_STANDARD_EXEC_PINS Macro in the "AllocateDefaultPins" Function, and it will work with this macro
  */
@@ -130,7 +130,7 @@
         } \
     }
 
-/**
+/*
  * Connects two pins, one from the node and one from the internal node
  * so the Internal node can use the passed values
  */
@@ -144,10 +144,10 @@
         } \
     }
 
-/** Gets & Declare the K2Node GUID and convert it to a string */
+/* Gets & Declare the K2Node GUID and convert it to a string */
 #define DECLARE_K2_GUID(GUID_VarName) FString GUID_VarName = NodeGuid.ToString();
 
-/** 
+/* 
  * Injects this K2Node's unique GUID into a pin on an internal node.
  * NOTE: Perfect for stateful nodes that need a unique ID to track data in a Map or Singleton.
  * SECONDNOTE: it doesn't need the DECLARE_K2_GUID macro, but you can use it if you want to store the GUID in a variable for later use
