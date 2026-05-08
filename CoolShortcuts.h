@@ -107,6 +107,7 @@
  * Make a K2Node Compact
  * IMPORTANT: IN HEADER ONLY
  * NOTE: You need a declared K2Node for this to work
+ * SECONDNOTE: You don't need to use MAKE_K2NODE_PURE, or make the node pure manually
  */
 #define MAKE_K2NODE_COMPACT(CompactText) \
     MAKE_K2NODE_PURE(); \
