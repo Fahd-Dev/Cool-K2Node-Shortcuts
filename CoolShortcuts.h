@@ -45,7 +45,7 @@
  * NOTE: This macro doesn't do anything without implementation
  * RECOMMENDATION: you can use the IMPLEMENT_K2NODE_ONLY Macro in the ".cpp"
  */
-#define DECLARE_K2NODE_ONLY \
+#define DECLARE_K2NODE_ONLY() \
     virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override; \
     virtual FText GetTooltipText() const override; \
     virtual FText GetMenuCategory() const override; \
@@ -54,7 +54,8 @@
 /**
  * Implements the GetNodeTitle, GetMenuCategory, GetTooltipText, GetMenuActions Functions
  * REQUIRES: "BlueprintActionDatabaseRegistrar.h" and "BlueprintNodeSpawner.h"
- * IMPORTANT: You must declare these functions in the ".h", you can just use the macro named DECLARE_K2NODE_ONLY in the header, IN ".cpp" ONLY
+ * IMPORTANT: You must declare these functions in the ".h" 
+ * RECOMMENDATION: you can just use the macro named DECLARE_K2NODE_ONLY in the header.
  */
 #define IMPLEMENT_K2NODE_ONLY(ClassName, Title, Tooltip, Category) \
     FText ClassName::GetNodeTitle(ENodeTitleType::Type TitleType) const { \
@@ -76,10 +77,47 @@
     }
 
 /**
+ * Handles the 'Search' keywords so your node shows up 
+ * even if the user doesn't type the exact name.
+ */
+#define K2NODE_KEYWORD(Keyword) \
+    virtual FText GetKeywords() const override { return FText::FromString(TEXT(Keyword)); }
+
+/** 
+ * a custom color for the bar on top of the node
+ * IMPORTANT: IN HEADER ONLY
+ * NOTE: You need a declared K2Node for this to work
+ */
+#define K2NODE_TITLE_COLOR(R, G, B) \
+    virtual FLinearColor GetNodeTitleColor() const override { \
+        return FLinearColor(R, G, B); \
+    }
+
+/** 
+ * Make a K2Node Pure
+ * IMPORTANT: IN HEADER ONLY
+ * NOTE: You need a declared K2Node for this to work
+ */
+#define MAKE_K2NODE_PURE() \
+    virtual bool IsNodePure() const override { \
+        return true; \
+    }
+
+/**
+ * Make a K2Node Compact
+ * IMPORTANT: IN HEADER ONLY
+ * NOTE: You need a declared K2Node for this to work
+ */
+#define MAKE_K2NODE_COMPACT(CompactText) \
+    MAKE_K2NODE_PURE(); \
+    virtual bool ShouldDrawCompact() const override { return true; } \
+    virtual FText GetCompactNodeTitle() const override { return FText::FromString(CompactText); }
+
+/**
  * Will add two pins: an Input exec (PN_Execute) and an Output exec (PN_Then)
  * RECOMMENDATION: to connect them in the ExpandNode function you can use a macro named LINK_STANDARD_EXEC_PINS it will connect them for you
  */
-#define CREATE_STANDARD_EXEC_PINS \
+#define CREATE_STANDARD_EXEC_PINS() \
     CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Execute); \
     CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Then);
 
@@ -94,6 +132,12 @@
 
 // Type Examples: PC_Boolean, PC_String, PC_NAME, etc.
 #define CREATE_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, UEdGraphSchema_K2::Type, PinName);
+
+/** Sets the default value of a pin by name */
+#define SET_PIN_DEFAULT(PinName, Value) \
+    if (UEdGraphPin* _TargetPin = FindPin(TEXT(PinName))) { \
+        _TargetPin->DefaultValue = LexToString(Value);; \
+    }
 
 // there will be more macros for creating pins in the future, so stay tuned for updates.
 
@@ -152,7 +196,7 @@
  * NOTE: Perfect for stateful nodes that need a unique ID to track data in a Map or Singleton.
  * SECONDNOTE: it doesn't need the DECLARE_K2_GUID macro, but you can use it if you want to store the GUID in a variable for later use
  */
-#define INJECT_K2_GUID(NodeVar, TargetPinName) \
+#define INJECT_K2NODE_GUID(NodeVar, TargetPinName) \
     { \
         FString _InternalGuid = NodeGuid.ToString(); \
         UEdGraphPin* _GPin = NodeVar->FindPin(TEXT(TargetPinName)); \
