@@ -175,14 +175,25 @@
         } \
     }
 
+/** Links the return values from the K2Node with the Internal Node */
+#define LINK_RETURN_VALUES(NodeVar) \
+    { \
+        UEdGraphPin* _InputPin = FindPin(UEdGraphSchema_K2::PN_ReturnValue); \
+        UEdGraphPin* _TargetPin = NodeVar->FindPin(UEdGraphSchema_K2::PN_ReturnValue); \
+        if (_InputPin && _TargetPin) \
+        { \
+            CompilerContext.MovePinLinksToIntermediate(*_InputPin, *_TargetPin); \
+        } \
+    }
+
 /**
  * Connects two pins, one from the node and one from the internal node
  * so the Internal node can use the passed values
  */
 #define LINK_PIN(NodeVar, InputPinName, WithPinName) \
     { \
-        UEdGraphPin* _InputPin = FindPin(TEXT(InputPinName)); \
-        UEdGraphPin* _TargetPin = NodeVar->FindPin(TEXT(WithPinName)); \
+        UEdGraphPin* _InputPin = FindPin(InputPinName); \
+        UEdGraphPin* _TargetPin = NodeVar->FindPin(WithPinName); \
         if (_InputPin && _TargetPin) \
         { \
             CompilerContext.MovePinLinksToIntermediate(*_InputPin, *_TargetPin); \
