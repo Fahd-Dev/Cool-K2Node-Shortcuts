@@ -107,7 +107,7 @@
  * Make a K2Node Compact
  * IMPORTANT: IN HEADER ONLY
  * NOTE: You need a declared K2Node for this to work
- * SECONDNOTE: You don't need to use MAKE_K2NODE_PURE, or make the node pure manually
+ * SECOND-NOTE: You don't need to use MAKE_K2NODE_PURE, or make the node pure manually
  */
 #define MAKE_K2NODE_COMPACT(CompactText) \
     MAKE_K2NODE_PURE(); \
@@ -200,13 +200,30 @@
         } \
     }
 
-/* Gets & Declare the K2Node GUID and convert it to a string */
-#define DECLARE_K2_GUID(GUID_VarName) FString GUID_VarName = NodeGuid.ToString();
+/**
+ * Copies connections from a pin to an internal node WITHOUT removing them from the original pin.
+ * Just like when you use the same variable pin on two nodes.
+ * 
+ * WHEN-USE: When multiple internal nodes need to share the same input (like a 'Target' or 'Component' pin).
+ * NOTE: Use LINK_PIN (Move) for the very last internal node to keep things clean.
+ */
+#define SHARE_PIN_LINK(NodeVar, InputPinName, WithPinName) \
+    { \
+        UEdGraphPin* _InputPin = FindPin(InputPinName); \
+        UEdGraphPin* _TargetPin = NodeVar->FindPin(WithPinName); \
+        if (_InputPin && _TargetPin) \
+        { \
+            CompilerContext.CopyPinLinksToIntermediate(*_InputPin, *_TargetPin); \
+        } \
+    }
+
+/** Gets & Declare the K2Node GUID and convert it to a string */
+#define GET_K2NODE_GUID(GUID_VarName) FString GUID_VarName = NodeGuid.ToString();
 
 /**
  * Injects this K2Node's unique GUID into a pin on an internal node.
  * NOTE: Perfect for stateful nodes that need a unique ID to track data in a Map or Singleton.
- * SECONDNOTE: it doesn't need the DECLARE_K2_GUID macro, but you can use it if you want to store the GUID in a variable for later use
+ * SECOND-NOTE: it doesn't need the DECLARE_K2_GUID macro, but you can use it if you want to store the GUID in a variable for later use
  */
 #define INJECT_K2NODE_GUID(NodeVar, TargetPinName) \
     { \
