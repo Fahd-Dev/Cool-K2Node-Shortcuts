@@ -217,6 +217,38 @@
         } \
     }
 
+/**
+ * Links a pin from an internal node to another pin from an internal node
+ */
+#define LINK_INTERNAL_PIN(NodeA, PinA, NodeB, PinB) \
+    { \
+        UEdGraphPin* _PA = NodeA->FindPin(PinA); \
+        UEdGraphPin* _PB = NodeB->FindPin(PinB); \
+        if (_PA && _PB) GetSchema()->TryCreateConnection(_PA, _PB); \
+    }
+
+/**
+ * Links the pins the user creates with "AddInputPin()" to an Array input on an internal node.
+ * REQUIRES: "K2Node_MakeArray.h"
+ */
+#define LINK_USER_PINS(InternalNode, TargetPin, Prefix) \
+    { \
+        UK2Node_MakeArray* _TmpArr = CompilerContext.SpawnIntermediateNode<UK2Node_MakeArray>(this, SourceGraph); \
+        _TmpArr->AllocateDefaultPins(); \
+        int32 _Idx = 0; \
+        for (UEdGraphPin* _Pin : Pins) { \
+            if (_Pin->PinName.ToString().StartsWith(TEXT(Prefix))) { \
+                if (_Idx > 0) _TmpArr->AddInputPin(); \
+                UEdGraphPin* _ArrIn = _TmpArr->FindPinChecked(FString::Printf(TEXT("[%d]"), _Idx)); \
+                if (_Pin && _ArrIn) CompilerContext.MovePinLinksToIntermediate(*_Pin, *_ArrIn); \
+                _Idx++; \
+            } \
+        } \
+        GetSchema()->TryCreateConnection(_TmpArr->GetOutputPin(), InternalNode->FindPinChecked(TEXT(TargetPin))); \
+    }
+
+
+
 /** Gets & Declare the K2Node GUID and convert it to a string */
 #define GET_K2NODE_GUID(GUID_VarName) FString GUID_VarName = NodeGuid.ToString();
 
