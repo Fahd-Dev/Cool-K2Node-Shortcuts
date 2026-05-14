@@ -114,34 +114,34 @@
     virtual bool ShouldDrawCompact() const override { return true; } \
     virtual FText GetCompactNodeTitle() const override { return FText::FromString(CompactText); }
 
+// Why not?
+#define K2Pin UEdGraphSchema_K2
+
 /**
  * Will add two pins: an Input exec (PN_Execute) and an Output exec (PN_Then)
  * RECOMMENDATION: to connect them in the ExpandNode function you can use a macro named LINK_STANDARD_EXEC_PINS it will connect them for you
  */
 #define CREATE_STANDARD_EXEC_PINS() \
-    CreatePin(EGPD_Input, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Execute); \
-    CreatePin(EGPD_Output, UEdGraphSchema_K2::PC_Exec, UEdGraphSchema_K2::PN_Then);
+    CreatePin(EGPD_Input, K2Pin::PC_Exec, K2Pin::PN_Execute); \
+    CreatePin(EGPD_Output, K2Pin::PC_Exec, K2Pin::PN_Then);
 
 // Type Examples: UObject, UCurveFloat, AActor, etc.
-#define CREATE_OBJECT_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, UEdGraphSchema_K2::PC_Object, Type::StaticClass(), PinName);
+#define CREATE_OBJECT_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, K2Pin::PC_Object, Type::StaticClass(), PinName);
 
 // Type Examples: FVector, FRotator, FLinearColor, etc.
-#define CREATE_STRUCT_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, UEdGraphSchema_K2::PC_Struct, Type::StaticStruct(), PinName);
+#define CREATE_STRUCT_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, K2Pin::PC_Struct, TBaseStructure<Type>::Get(), PinName);
 
 // Type Example: PC_Real - PC_Float, etc.
-#define CREATE_TWO_TYPE_PIN(Where, Type, Type2, PinName) CreatePin(EGPD_##Where, UEdGraphSchema_K2::Type, UEdGraphSchema_K2::Type2, PinName);
+#define CREATE_TWO_TYPE_PIN(Where, Type, Type2, PinName) CreatePin(EGPD_##Where, K2Pin::Type, K2Pin::Type2, PinName);
 
 // Type Examples: PC_Boolean, PC_String, PC_NAME, etc.
-#define CREATE_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, UEdGraphSchema_K2::Type, PinName);
+#define CREATE_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, K2Pin::Type, PinName);
 
 /** Sets the default value of a pin by name */
 #define SET_PIN_DEFAULT(PinName, Value) \
     if (UEdGraphPin* _TargetPin = FindPin(TEXT(PinName))) { \
         _TargetPin->DefaultValue = LexToString(Value);; \
     }
-
-// there will be more macros for creating pins in the future, so stay tuned for updates.
-
 
 /**
  * Creates a "UK2Node_CallFunction*"" variable named After the Value you've put in the "NodeVarName"
@@ -156,15 +156,31 @@
     NodeVarName->AllocateDefaultPins();
 
 /**
+ * Automatically adds a new pin to the node.
+ * It counts existing pins with the same prefix to ensure the index (0, 1, 2...) is correct.
+ */
+#define ADD_USER_PIN(Prefix, Where, Type) \
+    { \
+        Modify(); \
+        int32 _CurrentCount = 0; \
+        for (UEdGraphPin* _P : Pins) { \
+            if (_P->PinName.ToString().StartsWith(TEXT(Prefix))) _CurrentCount++; \
+        } \
+        FName _NewName = FName(*FString::Printf(TEXT(Prefix "%d"), _CurrentCount)); \
+        CREATE_PIN(Where, Type, _NewName); \
+        GetGraph()->NotifyGraphChanged(); \
+    }
+
+/**
  * This will connect the PN_Execute & PN_Then Execs With the node in the Variable named after the "NodeName" Variable
  * RECOMMENDATION: you can use the CREATE_STANDARD_EXEC_PINS Macro in the "AllocateDefaultPins" Function, and it will work with this macro
  */
 #define LINK_STANDARD_EXEC_PINS(NodeVar) \
     { \
-        UEdGraphPin* _ExecIn = FindPin(UEdGraphSchema_K2::PN_Execute); \
-        UEdGraphPin* _ExecOut = FindPin(UEdGraphSchema_K2::PN_Then); \
-        UEdGraphPin* _CallExecIn = NodeVar->FindPin(UEdGraphSchema_K2::PN_Execute); \
-        UEdGraphPin* _CallExecOut = NodeVar->FindPin(UEdGraphSchema_K2::PN_Then); \
+        UEdGraphPin* _ExecIn = FindPin(K2Pin::PN_Execute); \
+        UEdGraphPin* _ExecOut = FindPin(K2Pin::PN_Then); \
+        UEdGraphPin* _CallExecIn = NodeVar->FindPin(K2Pin::PN_Execute); \
+        UEdGraphPin* _CallExecOut = NodeVar->FindPin(K2Pin::PN_Then); \
         if (_ExecIn && _CallExecIn) \
         { \
             CompilerContext.MovePinLinksToIntermediate(*_ExecIn, *_CallExecIn); \
@@ -178,8 +194,8 @@
 /** Links the return values from the K2Node with the Internal Node */
 #define LINK_RETURN_VALUES(NodeVar) \
     { \
-        UEdGraphPin* _InputPin = FindPin(UEdGraphSchema_K2::PN_ReturnValue); \
-        UEdGraphPin* _TargetPin = NodeVar->FindPin(UEdGraphSchema_K2::PN_ReturnValue); \
+        UEdGraphPin* _InputPin = FindPin(K2Pin::PN_ReturnValue); \
+        UEdGraphPin* _TargetPin = NodeVar->FindPin(K2Pin::PN_ReturnValue); \
         if (_InputPin && _TargetPin) \
         { \
             CompilerContext.MovePinLinksToIntermediate(*_InputPin, *_TargetPin); \
@@ -237,17 +253,17 @@
         _TmpArr->AllocateDefaultPins(); \
         int32 _Idx = 0; \
         for (UEdGraphPin* _Pin : Pins) { \
-            if (_Pin->PinName.ToString().StartsWith(TEXT(Prefix))) { \
+            if (_Pin->PinName.ToString().StartsWith(FString(Prefix))) { \
                 if (_Idx > 0) _TmpArr->AddInputPin(); \
-                UEdGraphPin* _ArrIn = _TmpArr->FindPinChecked(FString::Printf(TEXT("[%d]"), _Idx)); \
+                UEdGraphPin* _ArrIn = _TmpArr->FindPinChecked(*FString::Printf(TEXT("[%d]"), _Idx)); \
                 if (_Pin && _ArrIn) CompilerContext.MovePinLinksToIntermediate(*_Pin, *_ArrIn); \
                 _Idx++; \
             } \
         } \
-        GetSchema()->TryCreateConnection(_TmpArr->GetOutputPin(), InternalNode->FindPinChecked(TEXT(TargetPin))); \
+        if (UEdGraphPin* _OutArr = _TmpArr->GetOutputPin()) { \
+            GetSchema()->TryCreateConnection(_OutArr, InternalNode->FindPinChecked(FName(TargetPin))); \
+        } \
     }
-
-
 
 /** Gets & Declare the K2Node GUID and convert it to a string */
 #define GET_K2NODE_GUID(GUID_VarName) FString GUID_VarName = NodeGuid.ToString();
