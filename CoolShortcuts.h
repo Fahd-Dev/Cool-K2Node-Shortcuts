@@ -131,7 +131,7 @@
 // Type Examples: FVector, FRotator, FLinearColor, etc.
 #define CREATE_STRUCT_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, K2Pin::PC_Struct, TBaseStructure<Type>::Get(), PinName);
 
-// Type Example: PC_Real - PC_Float, etc.
+// Creates a pin with two categories like, PC_Real - PC_Float
 #define CREATE_TWO_TYPE_PIN(Where, Type, Type2, PinName) CreatePin(EGPD_##Where, K2Pin::Type, K2Pin::Type2, PinName);
 
 // Type Examples: PC_Boolean, PC_String, PC_NAME, etc.
@@ -139,7 +139,7 @@
 
 /** Sets the default value of a pin by name */
 #define SET_PIN_DEFAULT(PinName, Value) \
-    if (UEdGraphPin* _TargetPin = FindPin(TEXT(PinName))) { \
+    if (UEdGraphPin* _TargetPin = FindPin(PinName)) { \
         _TargetPin->DefaultValue = LexToString(Value);; \
     }
 
@@ -276,7 +276,7 @@
 #define INJECT_K2NODE_GUID(NodeVar, TargetPinName) \
     { \
         FString _InternalGuid = NodeGuid.ToString(); \
-        UEdGraphPin* _GPin = NodeVar->FindPin(TEXT(TargetPinName)); \
+        UEdGraphPin* _GPin = NodeVar->FindPin(FName(TargetPinName)); \
         if (_GPin) \
         { \
             _GPin->DefaultValue = _InternalGuid; \
