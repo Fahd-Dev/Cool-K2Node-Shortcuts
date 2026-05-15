@@ -1,6 +1,6 @@
-## Showcase
-<img width="800" height="450" alt="Speedrun (1)" src="https://github.com/user-attachments/assets/a8f067c9-37c0-4bbb-8539-85648242e593" />
+# Speedrun
 
+<img width="800" height="450" alt="Speedrun (1)" src="https://github.com/user-attachments/assets/a8f067c9-37c0-4bbb-8539-85648242e593" />
 
 <sup>There's more macros</sup>
 
@@ -9,14 +9,14 @@
 ``` cpp
 "BlueprintGraph", "KismetCompiler", "UnrealEd"
 ```
-2. Download ``CoolShortcuts.h``.
-3. Drag and Drop the file into your project directory via your IDE; Compile project if needed
+2. Download [`CoolShortcuts.h`](./CoolShortcuts.h).
+4. Drag and Drop the file into your project directory via your IDE. Compile project if needed
 
 **That's it!**
 
 ---
 
-# TIP
+# Tip
 **To include the file without typing its full directory path, follow these steps**
 1. Create a folder in this directory (Source->ProjectName) and name it whatever you want \
 	<sup>Files in this folder can be included using only their filename</sup>
@@ -35,4 +35,4 @@ Replace "FolderName" with the name you chose in step 1
 ---
 
 
-# All macros are explained in ``CoolShortcuts.h``
+# All macros are explained in [`CoolShortcuts.h`](./CoolShortcuts.h)
