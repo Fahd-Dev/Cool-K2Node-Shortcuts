@@ -1,4 +1,4 @@
-# Speedrun
+# Showcase
 
 <img width="800" height="450" alt="Speedrun (1)" src="https://github.com/user-attachments/assets/a8f067c9-37c0-4bbb-8539-85648242e593" />
 
