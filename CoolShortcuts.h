@@ -140,11 +140,11 @@
 /** Sets the default value of a pin by name */
 #define SET_PIN_DEFAULT(PinName, Value) \
     if (UEdGraphPin* _TargetPin = FindPin(PinName)) { \
-        _TargetPin->DefaultValue = LexToString(Value);; \
+        _TargetPin->DefaultValue = LexToString(Value); \
     }
 
 /**
- * Creates a "UK2Node_CallFunction*"" variable named After the Value you've put in the "NodeVarName"
+ * Creates a "UK2Node_CallFunction*" variable named After the Value you've put in the "NodeVarName"
  * Stores the specified NodeClass and NodeFunction inside it
  * 
  * The variable is compatible with your K2Node and accessible for further customization
