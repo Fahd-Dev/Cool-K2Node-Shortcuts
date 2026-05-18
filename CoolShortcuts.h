@@ -139,7 +139,7 @@
 
 /** Sets the default value of a pin by name */
 #define SET_PIN_DEFAULT(PinName, Value) \
-    if (UEdGraphPin* _TargetPin = FindPin(PinName)) { \
+    if (UEdGraphPin* _TargetPin = FindPin(FName(PinName)) { \
         _TargetPin->DefaultValue = LexToString(Value); \
     }
 
@@ -208,8 +208,8 @@
  */
 #define LINK_PIN(NodeVar, InputPinName, WithPinName) \
     { \
-        UEdGraphPin* _InputPin = FindPin(InputPinName); \
-        UEdGraphPin* _TargetPin = NodeVar->FindPin(WithPinName); \
+        UEdGraphPin* _InputPin = FindPin(FName(InputPinName)); \
+        UEdGraphPin* _TargetPin = NodeVar->FindPin(FName(WithPinName)); \
         if (_InputPin && _TargetPin) \
         { \
             CompilerContext.MovePinLinksToIntermediate(*_InputPin, *_TargetPin); \
@@ -225,8 +225,8 @@
  */
 #define SHARE_PIN_LINK(NodeVar, InputPinName, WithPinName) \
     { \
-        UEdGraphPin* _InputPin = FindPin(InputPinName); \
-        UEdGraphPin* _TargetPin = NodeVar->FindPin(WithPinName); \
+        UEdGraphPin* _InputPin = FindPin(FName(InputPinName)); \
+        UEdGraphPin* _TargetPin = NodeVar->FindPin(FName(WithPinName)); \
         if (_InputPin && _TargetPin) \
         { \
             CompilerContext.CopyPinLinksToIntermediate(*_InputPin, *_TargetPin); \
@@ -238,8 +238,8 @@
  */
 #define LINK_INTERNAL_PIN(NodeA, PinA, NodeB, PinB) \
     { \
-        UEdGraphPin* _PA = NodeA->FindPin(PinA); \
-        UEdGraphPin* _PB = NodeB->FindPin(PinB); \
+        UEdGraphPin* _PA = NodeA->FindPin(FName(PinA)); \
+        UEdGraphPin* _PB = NodeB->FindPin(FName(PinB)); \
         if (_PA && _PB) GetSchema()->TryCreateConnection(_PA, _PB); \
     }
 
