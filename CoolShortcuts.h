@@ -139,7 +139,7 @@
 
 /** Sets the default value of a pin by name */
 #define SET_PIN_DEFAULT(PinName, Value) \
-    if (UEdGraphPin* _TargetPin = FindPin(FName(PinName)) { \
+    if (UEdGraphPin* _TargetPin = FindPin(FName(PinName))) { \
         _TargetPin->DefaultValue = LexToString(Value); \
     }
 
@@ -153,6 +153,26 @@
 #define ADD_INTERNAL_NODE(NodeVarName, NodeClass, NodeFunction) \
     UK2Node_CallFunction* NodeVarName = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph); \
     NodeVarName->SetFromFunction(NodeClass::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED(NodeClass, NodeFunction))); \
+    NodeVarName->AllocateDefaultPins();
+
+/** 
+ * Spawns an internal Async Action node. 
+ * This is required if you want to use the Delegate pins.
+ * REQUIRES: #include "K2Node_AsyncAction.h"
+ */
+#define ADD_INTERNAL_ASYNC_NODE(NodeVarName, NodeClass, NodeFunction) \
+    UK2Node_AsyncAction* NodeVarName = CompilerContext.SpawnIntermediateNode<UK2Node_AsyncAction>(this, SourceGraph); \
+    { \
+        struct FAsyncAccess : public UK2Node_AsyncAction { \
+            static void Set(UK2Node_AsyncAction* InNode, FName InFunc, UClass* InClass) { \
+                FAsyncAccess* Me = static_cast<FAsyncAccess*>(InNode); \
+                Me->ProxyFactoryFunctionName = InFunc; \
+                Me->ProxyFactoryClass = InClass; \
+                Me->ProxyClass = InClass; \
+            } \
+        }; \
+        FAsyncAccess::Set(NodeVarName, GET_FUNCTION_NAME_CHECKED(NodeClass, NodeFunction), NodeClass::StaticClass()); \
+    } \
     NodeVarName->AllocateDefaultPins();
 
 /**
