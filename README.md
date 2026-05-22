@@ -10,7 +10,7 @@
 "BlueprintGraph", "KismetCompiler", "UnrealEd"
 ```
 2. Download [`CoolShortcuts.h`](./CoolShortcuts.h).
-4. Drag and Drop the file into your project directory via your IDE. Compile project if needed
+3. Drag and Drop the file into your project directory via your IDE. Compile project if needed
 
 **That's it!**
 
