@@ -1,4 +1,4 @@
-// Copyright (c) 2026 Fahd-Dev
+// Copyright (c) 2026 Fahd-Dev.
 // Github: https://github.com/Fahd-Dev/Cool-K2Node-Shortcuts
 
 // This file has   V E R Y  C O O L   Shortcuts that will save you A LOT of time when creating K2Nodes
@@ -6,7 +6,7 @@
 /**
  * =========================================================================================
  * COMPATIBILITY:                                                                          |
- * This library was developed and tested on Unreal Engine 5.7.                             |
+ * This library was developed and tested on Unreal Engine 5.7                              |
  * Compatibility with older versions is likely but not guaranteed.                         |
  * Please report any issues or breaking changes for older/newer versions to the author.    |
  * Also the Library is not finished and still being improved & adding more macros          |
