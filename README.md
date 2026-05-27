@@ -5,7 +5,7 @@
 <sup>There's more macros</sup>
 
 # Setting up Library
-1. Make sure in your **Editor Module** ``PublicDependencyModuleNames.AddRange(new string[] { ... });`` in ``.Build.cs`` file have: 
+1. Make sure in your **Editor Module** ``PrivateDependencyModuleNames.AddRange(new string[] { ... });`` in ``.Build.cs`` file have: 
 ``` cpp
 "BlueprintGraph", "KismetCompiler", "UnrealEd"
 ```
@@ -18,7 +18,7 @@
 
 # Tip
 **To include the file without typing its full directory path, follow these steps**
-1. Create a folder in this directory (Source->ProjectName) and name it whatever you want \
+1. Create a folder anywhere (In the Editor Module) and name it whatever you want \
 	<sup>Files in this folder can be included using only their filename</sup>
    
 2. Put ``CoolShortcuts.h`` inside it
@@ -28,9 +28,8 @@ using System.IO;
 ```
 And This in the class
 ```c#
-PublicIncludePaths.AddRange(new string[] { Path.Combine(ModuleDirectory, "FolderName") });
+PublicIncludePaths.AddRange(new string[] { Path.Combine(ModuleDirectory, "FolderDirectory") });
 ```
-Replace "FolderName" with the name you chose in step 1
 
 ---
 
