@@ -5,7 +5,7 @@
 <sup>There's more macros</sup>
 
 # Setting up Library
-1. Make sure in your **Editor Module** ``PrivateDependencyModuleNames.AddRange(new string[] { ... });`` in ``.Build.cs`` file have: 
+1. Make sure in your **Editor Module** ``PublicDependencyModuleNames.AddRange(new string[] { ... });`` in ``.Build.cs`` file have: 
 ``` cpp
 "BlueprintGraph", "KismetCompiler", "UnrealEd"
 ```
