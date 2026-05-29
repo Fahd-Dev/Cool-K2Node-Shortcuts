@@ -1,8 +1,6 @@
 // Copyright (c) 2026 Fahd-Dev.
 // Github: https://github.com/Fahd-Dev/Cool-K2Node-Shortcuts
 
-// This file has   V E R Y  C O O L   Shortcuts that will save you A LOT of time when creating K2Nodes
-
 /**
  * =========================================================================================
  * COMPATIBILITY:                                                                          |
@@ -11,15 +9,24 @@
  * Please report any issues or breaking changes for older/newer versions to the author.    |
  * Also the Library is not finished and still being improved & adding more macros          |
  * =========================================================================================
+ * 
  */
-
+ 
 #pragma once
 
 /**
- * Declare with implementation for a K2Node 
- * IMPORTANT: Use this macro in The ".h". Will not work in the ".cpp".
- * REQUIRES: "BlueprintActionDatabaseRegistrar.h" and "BlueprintNodeSpawner.h"
- * WARNING: This macro could INCREASE the compiling time, if your project have a lot of K2Nodes, consider using these macros: DECLARE_K2NODE_ONLY with IMPLEMENT_K2NODE_ONLY
+ * @brief Declare with implementation for a K2Node.
+ * 
+ * @param ClassName The name of the class.
+ * @param Title The display title of the node.
+ * @param Tooltip The text shown when hovering over the node.
+ * @param Category The category in the Blueprint context menu.
+ * 
+ * @note IMPORTANT: Use this macro in The ".h". Will not work in the ".cpp".
+ * @note REQUIRES: "BlueprintActionDatabaseRegistrar.h" and "BlueprintNodeSpawner.h"
+ * 
+ * @warning This macro could INCREASE the compiling time, if your project have a lot 
+ * of K2Nodes, consider using these macros: DECLARE_K2NODE_ONLY with IMPLEMENT_K2NODE_ONLY.
  */
 #define CREATE_K2NODE(ClassName, Title, Tooltip, Category) \
     virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override { \
@@ -41,9 +48,10 @@
     }
 
 /**
- * Declares GetNodeTitle, GetMenuCategory, GetTooltipText, GetMenuActions Functions
- * NOTE: This macro doesn't do anything without implementation
- * RECOMMENDATION: you can use the IMPLEMENT_K2NODE_ONLY Macro in the ".cpp"
+ * @brief Declares GetNodeTitle, GetMenuCategory, GetTooltipText, GetMenuActions Functions.
+ * 
+ * @note This macro doesn't do anything without implementation.
+ * @note RECOMMENDATION: you can use the IMPLEMENT_K2NODE_ONLY Macro in the ".cpp".
  */
 #define DECLARE_K2NODE_ONLY() \
     virtual FText GetNodeTitle(ENodeTitleType::Type TitleType) const override; \
@@ -52,10 +60,16 @@
     virtual void GetMenuActions(FBlueprintActionDatabaseRegistrar& ActionRegistrar) const override;
 
 /**
- * Implements the GetNodeTitle, GetMenuCategory, GetTooltipText, GetMenuActions Functions
- * REQUIRES: "BlueprintActionDatabaseRegistrar.h" and "BlueprintNodeSpawner.h"
- * IMPORTANT: You must declare these functions in the ".h" 
- * RECOMMENDATION: you can just use the macro named DECLARE_K2NODE_ONLY in the header.
+ * @brief Implements the GetNodeTitle, GetMenuCategory, GetTooltipText, GetMenuActions Functions.
+ * 
+ * @param ClassName The name of the class.
+ * @param Title The display title of the node.
+ * @param Tooltip The text shown when hovering over the node.
+ * @param Category The category in the Blueprint context menu.
+ * 
+ * @note REQUIRES: "BlueprintActionDatabaseRegistrar.h" and "BlueprintNodeSpawner.h"
+ * @note IMPORTANT: You must declare these functions in the ".h".
+ * @note RECOMMENDATION: you can just use the macro named DECLARE_K2NODE_ONLY in the header.
  */
 #define IMPLEMENT_K2NODE_ONLY(ClassName, Title, Tooltip, Category) \
     FText ClassName::GetNodeTitle(ENodeTitleType::Type TitleType) const { \
@@ -77,16 +91,18 @@
     }
 
 /**
- * Handles the 'Search' keywords so your node shows up 
- * even if the user doesn't type the exact name.
+ * @brief Handles the 'Search' keywords so your node shows up even if the user doesn't type the exact name.
+ * 
+ * @param Keyword The string containing keywords.
  */
 #define K2NODE_KEYWORD(Keyword) \
     virtual FText GetKeywords() const override { return FText::FromString(TEXT(Keyword)); }
 
 /** 
- * a custom color for the bar on top of the node
- * IMPORTANT: IN HEADER ONLY
- * NOTE: You need a declared K2Node for this to work
+ * @brief A custom color for the bar on top of the node.
+ * 
+ * @note IMPORTANT: IN HEADER ONLY.
+ * @note NOTE: You need a declared K2Node for this to work.
  */
 #define K2NODE_TITLE_COLOR(R, G, B) \
     virtual FLinearColor GetNodeTitleColor() const override { \
@@ -94,9 +110,10 @@
     }
 
 /** 
- * Make a K2Node Pure
- * IMPORTANT: IN HEADER ONLY
- * NOTE: You need a declared K2Node for this to work
+ * @brief Make a K2Node Pure.
+ * 
+ * @note IMPORTANT: IN HEADER ONLY.
+ * @note NOTE: You need a declared K2Node for this to work.
  */
 #define MAKE_K2NODE_PURE() \
     virtual bool IsNodePure() const override { \
@@ -104,37 +121,42 @@
     }
 
 /**
- * Make a K2Node Compact
- * IMPORTANT: IN HEADER ONLY
- * NOTE: You need a declared K2Node for this to work
- * SECOND-NOTE: You don't need to use MAKE_K2NODE_PURE, or make the node pure manually
+ * @brief Make a K2Node Compact.
+ * 
+ * @param CompactText The text to display inside the compact node.
+ * 
+ * @note IMPORTANT: IN HEADER ONLY.
+ * @note NOTE: You need a declared K2Node for this to work.
+ * @note SECOND-NOTE: You don't need to use MAKE_K2NODE_PURE, or make the node pure manually.
  */
 #define MAKE_K2NODE_COMPACT(CompactText) \
     MAKE_K2NODE_PURE(); \
     virtual bool ShouldDrawCompact() const override { return true; } \
     virtual FText GetCompactNodeTitle() const override { return FText::FromString(CompactText); }
 
-// Why not?
+/** @brief Shortcut for UEdGraphSchema_K2 */
 #define K2Pin UEdGraphSchema_K2
 
 /**
- * Will add two pins: an Input exec (PN_Execute) and an Output exec (PN_Then)
- * RECOMMENDATION: to connect them in the ExpandNode function you can use a macro named LINK_STANDARD_EXEC_PINS it will connect them for you
+ * @brief Will add two pins: an Input exec (PN_Execute) and an Output exec (PN_Then).
+ * 
+ * @note RECOMMENDATION: to connect them in the ExpandNode function you can use a macro named 
+ * LINK_STANDARD_EXEC_PINS it will connect them for you.
  */
 #define CREATE_STANDARD_EXEC_PINS() \
     CreatePin(EGPD_Input, K2Pin::PC_Exec, K2Pin::PN_Execute); \
     CreatePin(EGPD_Output, K2Pin::PC_Exec, K2Pin::PN_Then);
 
-// Type Examples: UObject, UCurveFloat, AActor, etc.
+/** @brief Type Examples: UObject, UCurveFloat, AActor, etc. */
 #define CREATE_OBJECT_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, K2Pin::PC_Object, Type::StaticClass(), PinName);
 
-// Type Examples: FVector, FRotator, FLinearColor, etc.
+/** @brief Type Examples: FVector, FRotator, FLinearColor, etc. */
 #define CREATE_STRUCT_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, K2Pin::PC_Struct, TBaseStructure<Type>::Get(), PinName);
 
-// Creates a pin with two categories like, PC_Real - PC_Float
+/** @brief Creates a pin with two categories like, PC_Real - PC_Float */
 #define CREATE_TWO_TYPE_PIN(Where, Type, Type2, PinName) CreatePin(EGPD_##Where, K2Pin::Type, K2Pin::Type2, PinName);
 
-// Just read the name of the macro
+/** @brief Just read the name of the macro */
 #define CREATE_ENUM_PIN(Where, Enum, PinName) \
     { \
         UEnum* EnumPtr = StaticEnum<Enum>(); \
@@ -145,16 +167,16 @@
         } \
     }
 
-// Type Examples: PC_Boolean, PC_String, PC_NAME, etc.
+/** @brief Type Examples: PC_Boolean, PC_String, PC_NAME, etc. */
 #define CREATE_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, K2Pin::Type, PinName);
 
-/** Sets the default value of a pin by name */
+/** @brief Sets the default value of a pin by name */
 #define SET_PIN_DEFAULT(PinName, Value) \
     if (UEdGraphPin* _TargetPin = FindPin(FName(PinName))) { \
         _TargetPin->DefaultValue = LexToString(Value); \
     }
 
-/** Sets the default value of an ENUM pin by name */
+/** @brief Sets the default value of an ENUM pin by name */
 #define SET_ENUM_PIN_DEFAULT(PinName, Enum, Value) \
     if (UEdGraphPin* _TargetPin = FindPin(FName(PinName))) { \
         if (UEnum* _EnumPtr = StaticEnum<Enum>()) { \
@@ -163,11 +185,12 @@
     }
     
 /**
- * Creates a "UK2Node_CallFunction*" variable named After the Value you've put in the "NodeVarName"
- * Stores the specified NodeClass and NodeFunction inside it
+ * @brief Creates a "UK2Node_CallFunction*" variable named After the Value you've put in the "NodeVarName".
  * 
- * The variable is compatible with your K2Node and accessible for further customization
- * REQUIRES: You need to include "KismetCompiler.h" and "K2Node_CallFunction.h" for this to work
+ * Stores the specified NodeClass and NodeFunction inside it.
+ * The variable is compatible with your K2Node and accessible for further customization.
+ * 
+ * @note REQUIRES: You need to include "KismetCompiler.h" and "K2Node_CallFunction.h" for this to work.
  */
 #define ADD_INTERNAL_NODE(NodeVarName, NodeClass, NodeFunction) \
     UK2Node_CallFunction* NodeVarName = CompilerContext.SpawnIntermediateNode<UK2Node_CallFunction>(this, SourceGraph); \
@@ -175,9 +198,11 @@
     NodeVarName->AllocateDefaultPins();
 
 /** 
- * Spawns an internal Async Action node. 
+ * @brief Spawns an internal Async Action node. 
+ * 
  * This is required if you want to use the Delegate pins.
- * REQUIRES: #include "K2Node_AsyncAction.h"
+ * 
+ * @note REQUIRES: #include "K2Node_AsyncAction.h"
  */
 #define ADD_INTERNAL_ASYNC_NODE(NodeVarName, NodeClass, NodeFunction) \
     UK2Node_AsyncAction* NodeVarName = CompilerContext.SpawnIntermediateNode<UK2Node_AsyncAction>(this, SourceGraph); \
@@ -195,7 +220,8 @@
     NodeVarName->AllocateDefaultPins();
 
 /**
- * Automatically adds a new pin to the node.
+ * @brief Automatically adds a new pin to the node.
+ * 
  * It counts existing pins with the same prefix to ensure the index (0, 1, 2...) is correct.
  */
 #define ADD_USER_PIN(Prefix, Where, Type) \
@@ -211,8 +237,9 @@
     }
 
 /**
- * This will connect the PN_Execute & PN_Then Execs With the node in the Variable named after the "NodeName" Variable
- * RECOMMENDATION: you can use the CREATE_STANDARD_EXEC_PINS Macro in the "AllocateDefaultPins" Function, and it will work with this macro
+ * @brief This will connect the PN_Execute & PN_Then Execs With the node in the Variable named after the "NodeName" Variable.
+ * 
+ * @note RECOMMENDATION: you can use the CREATE_STANDARD_EXEC_PINS Macro in the "AllocateDefaultPins" Function, and it will work with this macro.
  */
 #define LINK_STANDARD_EXEC_PINS(NodeVar) \
     { \
@@ -230,7 +257,7 @@
         } \
     }
 
-/** Links the return values from the K2Node with the Internal Node */
+/** @brief Links the return values from the K2Node with the Internal Node */
 #define LINK_RETURN_VALUES(NodeVar) \
     { \
         UEdGraphPin* _InputPin = FindPin(K2Pin::PN_ReturnValue); \
@@ -242,8 +269,7 @@
     }
 
 /**
- * Connects two pins, one from the node and one from the internal node
- * so the Internal node can use the passed values
+ * @brief Connects two pins, one from the node and one from the internal node so the Internal node can use the passed values.
  */
 #define LINK_PIN(NodeVar, InputPinName, WithPinName) \
     { \
@@ -256,11 +282,12 @@
     }
 
 /**
- * Copies connections from a pin to an internal node WITHOUT removing them from the original pin.
+ * @brief Copies connections from a pin to an internal node WITHOUT removing them from the original pin.
+ * 
  * Just like when you use the same variable pin on two nodes.
  * 
- * WHEN-USE: When multiple internal nodes need to share the same input (like a 'Target' or 'Component' pin).
- * NOTE: Use LINK_PIN (Move) for the very last internal node to keep things clean.
+ * @note WHEN-USE: When multiple internal nodes need to share the same input (like a 'Target' or 'Component' pin).
+ * @note NOTE: Use LINK_PIN (Move) for the very last internal node to keep things clean.
  */
 #define SHARE_PIN_LINK(NodeVar, InputPinName, WithPinName) \
     { \
@@ -273,7 +300,7 @@
     }
 
 /**
- * Links a pin from an internal node to another pin from an internal node
+ * @brief Links a pin from an internal node to another pin from an internal node.
  */
 #define LINK_INTERNAL_PIN(NodeA, PinA, NodeB, PinB) \
     { \
@@ -283,8 +310,9 @@
     }
 
 /**
- * Links the pins the user creates with "AddInputPin()" to an Array input on an internal node.
- * REQUIRES: "K2Node_MakeArray.h"
+ * @brief Links the pins the user creates with "AddInputPin()" to an Array input on an internal node.
+ * 
+ * @note REQUIRES: "K2Node_MakeArray.h"
  */
 #define LINK_USER_PINS(InternalNode, TargetPin, Prefix) \
     { \
@@ -304,13 +332,14 @@
         } \
     }
 
-/** Gets & Declare the K2Node GUID and convert it to a string */
+/** @brief Gets & Declare the K2Node GUID and convert it to a string */
 #define GET_K2NODE_GUID(GUID_VarName) FString GUID_VarName = NodeGuid.ToString();
 
 /**
- * Injects this K2Node's unique GUID into a pin on an internal node.
- * NOTE: Perfect for stateful nodes that need a unique ID to track data in a Map or Singleton.
- * SECOND-NOTE: it doesn't need the DECLARE_K2_GUID macro, but you can use it if you want to store the GUID in a variable for later use
+ * @brief Injects this K2Node's unique GUID into a pin on an internal node.
+ * 
+ * @note NOTE: Perfect for stateful nodes that need a unique ID to track data in a Map or Singleton.
+ * @note SECOND-NOTE: it doesn't need the DECLARE_K2_GUID macro, but you can use it if you want to store the GUID in a variable for later use.
  */
 #define INJECT_K2NODE_GUID(NodeVar, TargetPinName) \
     { \
