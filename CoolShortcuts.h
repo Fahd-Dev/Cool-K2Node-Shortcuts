@@ -134,6 +134,17 @@
 // Creates a pin with two categories like, PC_Real - PC_Float
 #define CREATE_TWO_TYPE_PIN(Where, Type, Type2, PinName) CreatePin(EGPD_##Where, K2Pin::Type, K2Pin::Type2, PinName);
 
+// Just read the name of the macro
+#define CREATE_ENUM_PIN(Where, Enum, PinName) \
+    { \
+        UEnum* EnumPtr = StaticEnum<Enum>(); \
+        UEdGraphPin* EnumPin = CreatePin(EGPD_##Where, UEdGraphSchema_K2::PC_Byte, PinName); \
+        if (EnumPin && EnumPtr) \
+        { \
+            EnumPin->PinType.PinSubCategoryObject = EnumPtr; \
+        } \
+    }
+
 // Type Examples: PC_Boolean, PC_String, PC_NAME, etc.
 #define CREATE_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, K2Pin::Type, PinName);
 
@@ -143,6 +154,14 @@
         _TargetPin->DefaultValue = LexToString(Value); \
     }
 
+/** Sets the default value of an ENUM pin by name */
+#define SET_ENUM_PIN_DEFAULT(PinName, Enum, Value) \
+    if (UEdGraphPin* _TargetPin = FindPin(FName(PinName))) { \
+        if (UEnum* _EnumPtr = StaticEnum<Enum>()) { \
+            _TargetPin->DefaultValue = _EnumPtr->GetNameStringByValue((int64)Value); \
+        } \
+    }
+    
 /**
  * Creates a "UK2Node_CallFunction*" variable named After the Value you've put in the "NodeVarName"
  * Stores the specified NodeClass and NodeFunction inside it
