@@ -17,11 +17,6 @@
 /**
  * @brief Declare with implementation for a K2Node.
  * 
- * @param ClassName The name of the class.
- * @param Title The display title of the node.
- * @param Tooltip The text shown when hovering over the node.
- * @param Category The category in the Blueprint context menu.
- * 
  * @note IMPORTANT: Use this macro in The ".h". Will not work in the ".cpp".
  * @note REQUIRES: "BlueprintActionDatabaseRegistrar.h" and "BlueprintNodeSpawner.h"
  * 
@@ -61,11 +56,6 @@
 
 /**
  * @brief Implements the GetNodeTitle, GetMenuCategory, GetTooltipText, GetMenuActions Functions.
- * 
- * @param ClassName The name of the class.
- * @param Title The display title of the node.
- * @param Tooltip The text shown when hovering over the node.
- * @param Category The category in the Blueprint context menu.
  * 
  * @note REQUIRES: "BlueprintActionDatabaseRegistrar.h" and "BlueprintNodeSpawner.h"
  * @note IMPORTANT: You must declare these functions in the ".h".
