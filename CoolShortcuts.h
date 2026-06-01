@@ -209,6 +209,48 @@
     } \
     NodeVarName->AllocateDefaultPins();
 
+/** 
+ * @brief Spawns a visble node in the blueprint graph 
+ * @note Use in "PostPlacedNewNode"
+ */
+#define ADD_VISIBLE_NODE(NodeClass, NodeVarName, OffsetX, OffsetY) \
+    NodeClass* NodeVarName = NewObject<NodeClass>(GetGraph()); \
+    NodeVarName->NodePosX = OffsetX;\
+    NodeVarName->NodePosY = OffsetY; \
+    NodeVarName->AllocateDefaultPins(); \
+    GetGraph()->AddNode(NodeVarName, true, true);
+
+/** 
+ * @brief Spawns a visible CallFunction node at specific coordinates.
+ * @note Use in "PostPlacedNewNode"
+ */
+#define ADD_VISIBLE_FUNC_NODE(NodeClass, NodeVarName, NodeFunction, OffsetX, OffsetY) \
+    UK2Node_CallFunction* NodeVarName = NewObject<UK2Node_CallFunction>(GetGraph()); \
+    NodeVarName->NodePosX = OffsetX; \
+    NodeVarName->NodePosY = OffsetY; \
+    if (UFunction* _Func = NodeClass::StaticClass()->FindFunctionByName(GET_FUNCTION_NAME_CHECKED(NodeClass, NodeFunction))) { \
+        NodeVarName->SetFromFunction(_Func); \
+    } \
+    NodeVarName->AllocateDefaultPins(); \
+    NodeVarName->ReconstructNode(); \
+    GetGraph()->AddNode(NodeVarName, true, true);
+
+/**
+ * @brief Deletes the spawner node
+ * @note Use In "PostPlacedNewNode"
+ */
+#define DELETE_SPAWNER_NODE() \
+    AsyncTask(ENamedThreads::GameThread, [BP = GetBlueprint(), this]() \
+    { \
+        /* Use the 'BP' variable we captured! */ \
+        if (this && BP && this->GetGraph()) \
+        { \
+            FBlueprintEditorUtils::RemoveNode(BP, this, true); \
+            FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(BP); \
+        } \
+    });
+
+
 /**
  * @brief Automatically adds a new pin to the node.
  * 
