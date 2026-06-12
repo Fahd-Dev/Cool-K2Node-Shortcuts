@@ -127,6 +127,9 @@
 /** @brief Shortcut for UEdGraphSchema_K2 */
 #define K2Pin UEdGraphSchema_K2
 
+/** @brief Shortcut for UEdGraphPin */
+#define GraphPin UEdGraphPin
+
 /**
  * @brief Will add two pins: an Input exec (PN_Execute) and an Output exec (PN_Then).
  * 
@@ -138,27 +141,20 @@
     CreatePin(EGPD_Output, K2Pin::PC_Exec, K2Pin::PN_Then);
 
 /** @brief Type Examples: UObject, UCurveFloat, AActor, etc. */
-#define CREATE_OBJECT_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, K2Pin::PC_Object, Type::StaticClass(), PinName);
+#define CREATE_OBJECT_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, K2Pin::PC_Object, Type::StaticClass(), PinName)
 
 /** @brief Type Examples: FVector, FRotator, FLinearColor, etc. */
-#define CREATE_STRUCT_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, K2Pin::PC_Struct, TBaseStructure<Type>::Get(), PinName);
+#define CREATE_STRUCT_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, K2Pin::PC_Struct, TBaseStructure<Type>::Get(), PinName)
 
 /** @brief Creates a pin with two categories like, PC_Real - PC_Float */
-#define CREATE_TWO_TYPE_PIN(Where, Type, Type2, PinName) CreatePin(EGPD_##Where, K2Pin::Type, K2Pin::Type2, PinName);
+#define CREATE_TWO_TYPE_PIN(Where, Type, Type2, PinName) CreatePin(EGPD_##Where, K2Pin::Type, K2Pin::Type2, PinName)
 
-/** @brief Just read the name of the macro */
+/** @brief Just Read the macro name */
 #define CREATE_ENUM_PIN(Where, Enum, PinName) \
-    { \
-        UEnum* EnumPtr = StaticEnum<Enum>(); \
-        UEdGraphPin* EnumPin = CreatePin(EGPD_##Where, UEdGraphSchema_K2::PC_Byte, PinName); \
-        if (EnumPin && EnumPtr) \
-        { \
-            EnumPin->PinType.PinSubCategoryObject = EnumPtr; \
-        } \
-    }
+    CreatePin(EGPD_##Where, UEdGraphSchema_K2::PC_Byte, StaticEnum<Enum>(), PinName)
 
 /** @brief Type Examples: PC_Boolean, PC_String, PC_NAME, etc. */
-#define CREATE_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, K2Pin::Type, PinName);
+#define CREATE_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, K2Pin::Type, PinName)
 
 /** @brief Sets the default value of a pin by name */
 #define SET_PIN_DEFAULT(PinName, Value) \
@@ -174,6 +170,42 @@
         } \
     }
     
+/** @brief Hides a pin if the passed bool is true */
+#define HIDE_PIN_IF(PinName, Condition) \
+    { \
+    if (UEdGraphPin* _TargetPin = FindPin(FName(PinName))) \
+        { \
+            _TargetPin->bHidden = (Condition); \
+        }; \
+    };
+
+/** @brief Hides a pin.... its litrially the macro name */
+#define HIDE_PIN(PinName) \
+    { \
+    if (UEdGraphPin* _TargetPin = FindPin(FName(PinName))) \
+        { \
+            _TargetPin->bHidden = true; \
+        }; \
+    };
+
+/** @brief UnHide/Show -Whatever you call it- a Pin */
+#define UNHIDE_PIN(PinName) \
+    { \
+    if (UEdGraphPin* _TargetPin = FindPin(FName(PinName))) \
+        { \
+            _TargetPin->bHidden = false; \
+        }; \
+    };
+
+/** @brief Give the pin a tooltip */
+#define PIN_TOOLTIP(PinName, Tooltip) \
+    { \
+    if (UEdGraphPin* _TargetPin = FindPin(FName(PinName))) \
+        { \
+            _TargetPin->PinToolTip = Tooltip; \
+        }; \
+    };
+
 /**
  * @brief Creates a "UK2Node_CallFunction*" variable named After the Value you've put in the "NodeVarName".
  * 
