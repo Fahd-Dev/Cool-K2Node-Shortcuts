@@ -117,10 +117,8 @@
  * 
  * @note IMPORTANT: IN HEADER ONLY.
  * @note NOTE: You need a declared K2Node for this to work.
- * @note SECOND-NOTE: You don't need to use MAKE_K2NODE_PURE, or make the node pure manually.
  */
 #define MAKE_K2NODE_COMPACT(CompactText) \
-    MAKE_K2NODE_PURE(); \
     virtual bool ShouldDrawCompact() const override { return true; } \
     virtual FText GetCompactNodeTitle() const override { return FText::FromString(CompactText); }
 
@@ -335,10 +333,10 @@
 /**
  * @brief Connects two pins, one from the node and one from the internal node so the Internal node can use the passed values.
  */
-#define LINK_PIN(NodeVar, InputPinName, WithPinName) \
+#define LINK_PIN(NodeVar, K2NodePin, InternalPin) \
     { \
-        UEdGraphPin* _InputPin = FindPin(FName(InputPinName)); \
-        UEdGraphPin* _TargetPin = NodeVar->FindPin(FName(WithPinName)); \
+        UEdGraphPin* _InputPin = FindPin(FName(K2NodePin)); \
+        UEdGraphPin* _TargetPin = NodeVar->FindPin(FName(InternalPin)); \
         if (_InputPin && _TargetPin) \
         { \
             CompilerContext.MovePinLinksToIntermediate(*_InputPin, *_TargetPin); \
@@ -353,10 +351,10 @@
  * @note WHEN-USE: When multiple internal nodes need to share the same input (like a 'Target' or 'Component' pin).
  * @note NOTE: Use LINK_PIN (Move) for the very last internal node to keep things clean.
  */
-#define SHARE_PIN_LINK(NodeVar, InputPinName, WithPinName) \
+#define SHARE_PIN_LINK(NodeVar, K2NodePin, InternalPin) \
     { \
-        UEdGraphPin* _InputPin = FindPin(FName(InputPinName)); \
-        UEdGraphPin* _TargetPin = NodeVar->FindPin(FName(WithPinName)); \
+        UEdGraphPin* _InputPin = FindPin(FName(K2NodePin)); \
+        UEdGraphPin* _TargetPin = NodeVar->FindPin(FName(InternalPin)); \
         if (_InputPin && _TargetPin) \
         { \
             CompilerContext.CopyPinLinksToIntermediate(*_InputPin, *_TargetPin); \
