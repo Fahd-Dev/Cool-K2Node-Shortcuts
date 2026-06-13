@@ -4,6 +4,11 @@
 
 <sup>There's more macros</sup>
 
+# What is this?
+It's a **Single-Header** Library that makes creating K2Nodes **Significantly** Faster & Easier.
+
+---
+
 # Setting up Library
 1. Make sure in your **Editor Module** ``PublicDependencyModuleNames.AddRange(new string[] { ... });`` in ``.Build.cs`` file have: 
 ``` cpp
@@ -17,21 +22,23 @@
 ---
 
 # Tip
-**To include the file without typing its full directory path, follow these steps**
+**To include the library without typing its full directory path, follow these steps**
 1. Create a folder anywhere (In the Editor Module) and name it whatever you want \
 	<sup>Files in this folder can be included using only their filename</sup>
    
 2. Put ``CoolShortcuts.h`` inside it
 3. Add this in your ``.build.cs`` at the top
-```c#
+```cSharp
 using System.IO;
 ```
 And This in the class
-```c#
+```cSharp
 PublicIncludePaths.AddRange(new string[] { Path.Combine(ModuleDirectory, "FolderDirectory") });
 ```
 
 ---
 
+## And Checkout this Tool
+[![K2Nodes](https://img.shields.io/badge/Open-K2Nodes_Interface-blue?style=for-the-badge)](https://fahd-dev.github.io/Cool-K2Node-Shortcuts/)
 
 # All macros are explained in [`CoolShortcuts.h`](./CoolShortcuts.h)
