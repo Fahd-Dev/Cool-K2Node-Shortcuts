@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K2Node Interface | Fahd-Dev</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #050508; --panel: #11111d; --accent: #6366f1; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #fff; overflow-x: hidden; }
+        .code-font { font-family: 'Fira Code', monospace; }
+        .glass { background: #11111d; border: 1px solid rgba(255,255,255,0.05); }
+        .input-style { background: #1a1a2e; border: 1px solid #2d2d44; border-radius: 6px; padding: 0.7rem; width: 100%; color: #e2e8f0; font-size: 0.85rem; transition: 0.2s; }
+        .input-style:focus { outline: none; border-color: var(--accent); background: #1e1e3a; }
+        .tab-active { background: #1a1a2e; color: var(--accent); border: 1px solid rgba(99,102,241,0.3); }
+        .shortcut-link { color: #6366f1; text-decoration: none; transition: 0.2s; }
+        .shortcut-link:hover { opacity: 0.8; text-decoration: underline; }
+        input[type="checkbox"] { accent-color: var(--accent); cursor: pointer; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #2d2d44; border-radius: 10px; }
+    </style>
+</head>
+<body class="p-8 lg:p-12">
+    <div class="max-w-[1600px] mx-auto">
+        <!-- Header Section -->
+        <header class="flex justify-between items-start mb-12">
+            <div class="flex gap-4">
+                <div class="w-14 h-14 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"/></svg>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-bold tracking-tight leading-none text-white">K2Node <span class="text-indigo-400">Interface</span></h1>
+                    <h2 class="text-slate-500 text-[10px] mt-2 tracking-[0.3em] uppercase opacity-70">By <span class="text-slate-200 font-bold">Fahd-Dev</span></h2>
+                    <p class="text-slate-500 text-sm mt-3 font-medium">Generate a K2Node Interface With <a href="https://github.com/Fahd-Dev/Cool-K2Node-Shortcuts" target="_blank" class="shortcut-link">Cool-K2Node-Shortcuts</a></p>
+                </div>
+            </div>
+            <button onclick="exportFiles()" class="bg-indigo-600 hover:bg-indigo-500 px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-indigo-500/20 active:scale-95">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Export Source Files (.zip)
+            </button>
+        </header>
+
+        <div class="grid lg:grid-cols-12 gap-8">
+            <!-- UI Interaction Panel -->
+            <div class="lg:col-span-4 space-y-6">
+                <section class="glass p-8 rounded-2xl shadow-2xl">
+                    <h3 class="text-indigo-400 text-xs font-bold uppercase tracking-widest mb-6">Global Configuration</h3>
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="space-y-1"><label class="text-[10px] text-slate-500 uppercase font-bold">Class Name</label><input type="text" id="ClassName" placeholder="MyNode" class="input-style" oninput="update()"></div>
+                        <div class="space-y-1"><label class="text-[10px] text-slate-500 uppercase font-bold">Category</label><input type="text" id="Category" placeholder="Uncategorized" class="input-style" oninput="update()"></div>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="space-y-1"><label class="text-[10px] text-slate-500 uppercase font-bold">Node Title</label><input type="text" id="Title" placeholder="My Custom Node" class="input-style" oninput="update()"></div>
+                        <div class="space-y-1"><label class="text-[10px] text-slate-500 uppercase font-bold">Tooltip Description</label><textarea id="Tooltip" rows="3" placeholder="Description..." class="input-style" oninput="update()"></textarea></div>
+                        <div class="space-y-1"><label class="text-[10px] text-slate-500 uppercase font-bold">Search Keywords</label><input type="text" id="Keywords" placeholder="logic, math, helper" class="input-style" oninput="update()"></div>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 gap-3 mt-6 pt-6 border-t border-white/5">
+                        <label class="flex items-center gap-3 text-xs text-slate-400 cursor-pointer hover:text-slate-200 transition-colors"><input type="checkbox" id="StdExec" onchange="update()"> Standard Exec Pins</label>
+                        <label class="flex items-center gap-3 text-xs text-slate-400 cursor-pointer hover:text-slate-200 transition-colors"><input type="checkbox" id="IsPure" onchange="update()"> Pure</label>
+                        <label class="flex items-center gap-3 text-xs text-slate-400 cursor-pointer hover:text-slate-200 transition-colors"><input type="checkbox" id="IsCompact" onchange="update()"> Compact</label>
+                    </div>
+                </section>
+
+                <section class="glass p-8 rounded-2xl shadow-2xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-emerald-400 text-xs font-bold uppercase tracking-widest">Node Pins</h3>
+                        <button onclick="addPin()" class="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-3 py-1 rounded-md border border-emerald-500/20 uppercase hover:bg-emerald-500 hover:text-white transition-all">+ Add Pin</button>
+                    </div>
+                    <div id="pinsContainer" class="space-y-4"></div>
+                </section>
+            </div>
+
+            <!-- Code Preview Panel -->
+            <div class="lg:col-span-8 glass rounded-3xl overflow-hidden flex flex-col shadow-2xl">
+                <div class="flex bg-[#0a0a14] p-2 gap-2">
+                    <button id="tH" onclick="setTab('h')" class="flex-1 py-3 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all tab-active">Header File</button>
+                    <button id="tC" onclick="setTab('c')" class="flex-1 py-3 text-[10px] font-bold uppercase tracking-widest rounded-xl text-slate-500 transition-all">Source File</button>
+                </div>
+                <div class="relative flex-grow">
+                    <textarea id="pH" class="w-full h-[850px] p-10 code-font text-[13px] bg-transparent outline-none text-slate-300 resize-none" readonly spellcheck="false"></textarea>
+                    <textarea id="pC" class="w-full h-[850px] p-10 code-font text-[13px] bg-transparent outline-none text-slate-300 hidden resize-none" readonly spellcheck="false"></textarea>
+                    <button onclick="copyCode()" class="absolute top-6 right-6 p-2 bg-white/5 hover:bg-indigo-500/20 rounded-lg text-[10px] uppercase font-bold px-4 border border-white/10 transition-all">Copy Code</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tab = 'h';
+        const get = id => document.getElementById(id);
+        
+        const setTab = t => {
+            tab = t;
+            get('pH').classList.toggle('hidden', t === 'c'); 
+            get('pC').classList.toggle('hidden', t === 'h');
+            get('tH').className = `flex-1 py-3 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all ${t==='h'?'tab-active':'text-slate-500'}`;
+            get('tC').className = `flex-1 py-3 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all ${t==='c'?'tab-active':'text-slate-500'}`;
+        };
+
+        const createPin = (d = {}) => `
+            <div class="pin-card bg-[#1a1a2e]/60 p-5 rounded-xl border border-white/5 flex gap-4 items-start group relative transition-all hover:border-white/10">
+                <div class="drag-handle mt-6 cursor-grab text-slate-600 select-none hover:text-indigo-400">⠿</div>
+                <div class="flex-grow grid grid-cols-2 gap-x-4 gap-y-3">
+                    <div class="space-y-1"><label class="text-[9px] text-slate-500 uppercase font-bold tracking-tight">Method</label>
+                        <select class="p-m input-style !p-2 text-xs" onchange="update()">
+                            <option value="CREATE_PIN" ${d.m==='CREATE_PIN'?'selected':''}>Standard Pin</option>
+                            <option value="CREATE_STRUCT_PIN" ${d.m==='CREATE_STRUCT_PIN'?'selected':''}>Struct Pin</option>
+                            <option value="CREATE_OBJECT_PIN" ${d.m==='CREATE_OBJECT_PIN'?'selected':''}>Object Pin</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1"><label class="text-[9px] text-slate-500 uppercase font-bold tracking-tight">Direction</label>
+                        <select class="p-d input-style !p-2 text-xs" onchange="update()">
+                            <option value="Input" ${d.d==='Input'?'selected':''}>Input</option>
+                            <option value="Output" ${d.d==='Output'?'selected':''}>Output</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1"><label class="text-[9px] text-slate-500 uppercase font-bold tracking-tight">Name</label>
+                        <input type="text" class="p-n input-style !p-2 text-xs" placeholder="Pin Name" value="${d.n||''}" oninput="update()">
+                    </div>
+                    <div class="space-y-1"><label class="text-[9px] text-slate-500 uppercase font-bold tracking-tight">Type</label>
+                        <input type="text" class="p-t input-style !p-2 text-xs" placeholder="PC_Boolean" value="${d.t||''}" oninput="update()">
+                    </div>
+                    <div class="space-y-1"><label class="text-[9px] text-slate-500 uppercase font-bold tracking-tight">Tooltip</label>
+                         <input type="text" class="p-tt input-style !p-2 text-xs" placeholder="Description" value="${d.tt||''}" oninput="update()">
+                    </div>
+                    <div class="space-y-1"><label class="text-[9px] text-slate-500 uppercase font-bold tracking-tight">Hide If</label>
+                         <input type="text" class="p-hi input-style !p-2 text-xs" placeholder="Condition" value="${d.hi||''}" oninput="update()">
+                    </div>
+                </div>
+                <button onclick="this.closest('.pin-card').remove();update()" class="absolute top-4 right-4 text-slate-600 hover:text-red-500 transition-colors">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>`;
+
+        const addPin = (d) => { get('pinsContainer').insertAdjacentHTML('beforeend', createPin(d)); update(); };
+
+        function update() {
+            const cfg = {
+                cn: get('ClassName').value || 'MyNode', ti: get('Title').value || 'My Custom Node',
+                tt: get('Tooltip').value || 'Description...', ct: get('Category').value || 'Uncategorized', kw: get('Keywords').value || '',
+                se: get('StdExec').checked, ip: get('IsPure').checked, ic: get('IsCompact').checked,
+                ps: Array.from(document.querySelectorAll('.pin-card')).map(c => ({
+                    m: c.querySelector('.p-m').value, d: c.querySelector('.p-d').value, n: c.querySelector('.p-n').value, t: c.querySelector('.p-t').value, tt: c.querySelector('.p-tt').value, hi: c.querySelector('.p-hi').value
+                }))
+            };
+            sessionStorage.setItem('k2data', JSON.stringify(cfg));
+            
+            let hMac = "";
+            if (cfg.ip) hMac += "    MAKE_K2NODE_PURE()\n";
+            if (cfg.ic) hMac += "    MAKE_K2NODE_COMPACT()\n";
+
+            let sMac = "";
+            if (cfg.se) sMac += "    CREATE_STANDARD_EXEC_PINS();\n";
+            cfg.ps.forEach(p => {
+                if (p.n) {
+                    sMac += `    ${p.m}(${p.d}, ${p.t || 'PC_Real'}, TEXT("${p.n}"));\n`;
+                    if (p.tt) sMac += `    PIN_TOOLTIP(TEXT("${p.n}"), TEXT("${p.tt}"));\n`;
+                    if (p.hi) sMac += `    HIDE_PIN_IF(TEXT("${p.n}"), ${p.hi});\n`;
+                }
+            });
+
+            get('pH').value = `// Your Copyright Notice Here\n\n#pragma once\n\n#include "CoreMinimal.h"\n#include "K2Node.h"\n#include "CoolShortcuts.h"\n#include "K2Node_${cfg.cn}.generated.h"\n\nUCLASS()\nclass UK2Node_${cfg.cn} : public UK2Node\n{\n    GENERATED_BODY()\n\npublic:\n    virtual void AllocateDefaultPins() override;\n    virtual void ExpandNode(class FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;\n\n${hMac}    DECLARE_K2NODE_ONLY()\n    K2NODE_KEYWORD("${cfg.kw}")\n};`;
+            get('pC').value = `// Your Copyright Notice Here\n\n#include "K2Node_${cfg.cn}.h"\n#include "KismetCompiler.h"\n#include "BlueprintNodeSpawner.h"\n#include "BlueprintActionDatabaseRegistrar.h"\n\nIMPLEMENT_K2NODE_ONLY(UK2Node_${cfg.cn}, "${cfg.ti}", "${cfg.tt}", "${cfg.ct}")\n\nvoid UK2Node_${cfg.cn}::AllocateDefaultPins()\n{\n    Super::AllocateDefaultPins();\n\n${sMac || '    // Define pins here'}\n}\n\nvoid UK2Node_${cfg.cn}::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)\n{\n    Super::ExpandNode(CompilerContext, SourceGraph);\n\n    // Node expansion logic here\n}`;
+        }
+
+        const copyCode = () => { const t = tab === 'h' ? get('pH') : get('pC'); navigator.clipboard.writeText(t.value); alert("Code copied!"); };
+        
+        async function exportFiles() {
+            const zip = new JSZip();
+            const className = get('ClassName').value || 'MyNode';
+            
+            zip.file(`K2Node_${className}.h`, get('pH').value);
+            zip.file(`K2Node_${className}.cpp`, get('pC').value);
+            
+            const content = await zip.generateAsync({type: "blob"});
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(content);
+            a.download = `${className} Source.zip`;
+            a.click();
+        }
+
+        window.onload = () => {
+            Sortable.create(get('pinsContainer'), { animation: 150, handle: '.drag-handle', onEnd: update });
+            const s = sessionStorage.getItem('k2data');
+            if (s) {
+                const d = JSON.parse(s);
+                get('ClassName').value = d.cn || ''; get('Title').value = d.ti || ''; 
+                get('Tooltip').value = d.tt || ''; get('Category').value = d.ct || ''; 
+                get('Keywords').value = d.kw || '';
+                get('StdExec').checked = d.se || false; get('IsPure').checked = d.ip || false; get('IsCompact').checked = d.ic || false;
+                if (d.ps && d.ps.length > 0) d.ps.forEach(addPin); else addPin();
+            } else addPin();
+            update();
+        };
+    </script>
+</body>
+</html>
