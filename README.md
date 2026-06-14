@@ -25,17 +25,17 @@
    
 2. Put ``CoolShortcuts.h`` inside it
 3. Add this in your ``.build.cs`` at the top
-```cSharp
+```csharp
 using System.IO;
 ```
 And This in the class
-```cSharp
+```csharp
 PublicIncludePaths.AddRange(new string[] { Path.Combine(ModuleDirectory, "FolderDirectory") });
 ```
 
 ---
 
 ## And Checkout this Tool
-[![K2Nodes](https://img.shields.io/badge/Open-K2Nodes_Interface-blue?style=for-the-badge)](https://fahd-dev.github.io/Cool-K2Node-Shortcuts/)
+[![K2Nodes](https://img.shields.io/badge/Open-K2Node_Interface-blue?style=for-the-badge)](https://fahd-dev.github.io/Cool-K2Node-Shortcuts/)
 
 # All macros are explained in [`CoolShortcuts.h`](./CoolShortcuts.h)
