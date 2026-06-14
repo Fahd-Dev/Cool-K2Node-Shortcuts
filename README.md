@@ -4,9 +4,6 @@
 
 <sup>There's more macros</sup>
 
-# What is this?
-An **Open-Source Header-Only** Library that makes creating K2Nodes **Significantly** Easier & Faster.
-
 ---
 
 # Setting up Library
