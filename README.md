@@ -5,7 +5,7 @@
 <sup>There's more macros</sup>
 
 # What is this?
-It's a **Single-Header** Library that makes creating K2Nodes **Significantly** Faster & Easier.
+It's a **Header-Only** Library that makes creating K2Nodes **Significantly** Faster & Easier.
 
 ---
 
