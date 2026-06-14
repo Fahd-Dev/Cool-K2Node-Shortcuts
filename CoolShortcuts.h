@@ -4,9 +4,8 @@
 /**
  * =========================================================================================
  * COMPATIBILITY:                                                                          |
- * This library was developed and tested on Unreal Engine 5.7                              |
+ * This version was developed and tested on Unreal Engine 5.7                              |
  * Compatibility with older versions is likely but not guaranteed.                         |
- * Please report any issues or breaking changes for older/newer versions to the author.    |
  * =========================================================================================
  * 
  */
