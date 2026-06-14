@@ -177,7 +177,7 @@
         }; \
     };
 
-/** @brief Hides a pin.... its litrially the macro name */
+/** @brief Hides a pin */
 #define HIDE_PIN(PinName) \
     { \
     if (UEdGraphPin* _TargetPin = FindPin(FName(PinName))) \
