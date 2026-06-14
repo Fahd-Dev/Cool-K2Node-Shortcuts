@@ -1,4 +1,5 @@
 // Copyright (c) 2026 Fahd-Dev.
+// Library Version: UE5.7 | v0.0.1 Alpha
 // Github: https://github.com/Fahd-Dev/Cool-K2Node-Shortcuts
 
 /**
