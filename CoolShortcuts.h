@@ -6,7 +6,7 @@
  * =========================================================================================
  * COMPATIBILITY:                                                                          |
  * This version was developed and tested on Unreal Engine 5.7                              |
- * Compatibility with older versions is likely but not guaranteed.                         |
+ * Compatibility with other versions is likely but not guaranteed.                         |
  * =========================================================================================
  * 
  */
