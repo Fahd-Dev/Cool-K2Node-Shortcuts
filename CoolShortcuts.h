@@ -85,8 +85,6 @@
 
 /**
  * @brief Handles the 'Search' keywords so your node shows up even if the user doesn't type the exact name.
- * 
- * @param Keyword The string containing keywords.
  */
 #define K2NODE_KEYWORD(Keyword) \
     virtual FText GetKeywords() const override { return FText::FromString(TEXT(Keyword)); }
@@ -126,7 +124,7 @@
     virtual FText GetCompactNodeTitle() const override { return FText::FromString(CompactText); }
 
 //==============================================================================
-//  Pin Creation Shortcuts
+//  Pin Creation Macros
 //==============================================================================
 
 /** @brief Shortcut for UEdGraphSchema_K2 */
@@ -159,7 +157,6 @@
 #define CREATE_TWO_TYPE_PIN(Where, Type, Type2, PinName) \
     CreatePin(EGPD_##Where, K2Pin::Type, K2Pin::Type2, PinName)
 
-/** @brief Just Read the macro name */
 #define CREATE_ENUM_PIN(Where, Enum, PinName) \
     CreatePin(EGPD_##Where, UEdGraphSchema_K2::PC_Byte, StaticEnum<Enum>(), PinName)
 
@@ -313,10 +310,18 @@
  */
 #define DELETE_SPAWNER_NODE() \
     do { \
-        AsyncTask(ENamedThreads::GameThread, [BP = GetBlueprint(), this]() { \
-            if (this && BP && this->GetGraph()) { \
-                FBlueprintEditorUtils::RemoveNode(BP, this, true); \
-                FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(BP); \
+        TWeakObjectPtr<UEdGraphNode> WeakThis(this); \
+        UBlueprint* BP = GetBlueprint(); \
+        if (!BP) break; \
+        TWeakObjectPtr<UBlueprint> WeakBP(BP); \
+        AsyncTask(ENamedThreads::GameThread, [WeakThis, WeakBP]() { \
+            if (WeakThis.IsValid() && WeakBP.IsValid()) { \
+                UEdGraphNode* Node = WeakThis.Get(); \
+                UBlueprint* Blueprint = WeakBP.Get(); \
+                if (Node && Node->GetGraph()) { \
+                    FBlueprintEditorUtils::RemoveNode(Blueprint, Node, true); \
+                    FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(Blueprint); \
+                } \
             } \
         }); \
     } while(0)
@@ -443,9 +448,4 @@
         } \
     } while(0)
 
-/**
- * 3zgol? 🦜
- *
- * also.... DON'T OPEN THIS LINK
- * https://tinylink.net/hRmEG
- */
+// bye bye parrot ):
