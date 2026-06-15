@@ -13,6 +13,10 @@
  
 #pragma once
 
+//==============================================================================
+//  Node Declaration & Implementation Macros
+//==============================================================================
+
 /**
  * @brief Declare with implementation for a K2Node.
  * 
@@ -121,6 +125,10 @@
     virtual bool ShouldDrawCompact() const override { return true; } \
     virtual FText GetCompactNodeTitle() const override { return FText::FromString(CompactText); }
 
+//==============================================================================
+//  Pin Creation Shortcuts
+//==============================================================================
+
 /** @brief Shortcut for UEdGraphSchema_K2 */
 #define K2Pin UEdGraphSchema_K2
 
@@ -134,74 +142,109 @@
  * LINK_STANDARD_EXEC_PINS it will connect them for you.
  */
 #define CREATE_STANDARD_EXEC_PINS() \
-    CreatePin(EGPD_Input, K2Pin::PC_Exec, K2Pin::PN_Execute); \
-    CreatePin(EGPD_Output, K2Pin::PC_Exec, K2Pin::PN_Then);
+    do { \
+        CreatePin(EGPD_Input, K2Pin::PC_Exec, K2Pin::PN_Execute); \
+        CreatePin(EGPD_Output, K2Pin::PC_Exec, K2Pin::PN_Then); \
+    } while(0)
 
 /** @brief Type Examples: UObject, UCurveFloat, AActor, etc. */
-#define CREATE_OBJECT_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, K2Pin::PC_Object, Type::StaticClass(), PinName)
+#define CREATE_OBJECT_PIN(Where, Type, PinName) \
+    CreatePin(EGPD_##Where, K2Pin::PC_Object, Type::StaticClass(), PinName)
 
 /** @brief Type Examples: FVector, FRotator, FLinearColor, etc. */
-#define CREATE_STRUCT_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, K2Pin::PC_Struct, TBaseStructure<Type>::Get(), PinName)
+#define CREATE_STRUCT_PIN(Where, Type, PinName) \
+    CreatePin(EGPD_##Where, K2Pin::PC_Struct, TBaseStructure<Type>::Get(), PinName)
 
 /** @brief Creates a pin with two categories like, PC_Real - PC_Float */
-#define CREATE_TWO_TYPE_PIN(Where, Type, Type2, PinName) CreatePin(EGPD_##Where, K2Pin::Type, K2Pin::Type2, PinName)
+#define CREATE_TWO_TYPE_PIN(Where, Type, Type2, PinName) \
+    CreatePin(EGPD_##Where, K2Pin::Type, K2Pin::Type2, PinName)
 
 /** @brief Just Read the macro name */
 #define CREATE_ENUM_PIN(Where, Enum, PinName) \
     CreatePin(EGPD_##Where, UEdGraphSchema_K2::PC_Byte, StaticEnum<Enum>(), PinName)
 
 /** @brief Type Examples: PC_Boolean, PC_String, PC_NAME, etc. */
-#define CREATE_PIN(Where, Type, PinName) CreatePin(EGPD_##Where, K2Pin::Type, PinName)
+#define CREATE_PIN(Where, Type, PinName) \
+    CreatePin(EGPD_##Where, K2Pin::Type, PinName)
+
+//==============================================================================
+//  Pin Manipulation Macros
+//==============================================================================
 
 /** @brief Sets the default value of a pin by name */
 #define SET_PIN_DEFAULT(PinName, Value) \
-    if (UEdGraphPin* _TargetPin = FindPin(FName(PinName))) { \
-        _TargetPin->DefaultValue = LexToString(Value); \
-    }
+    do { \
+        if (GraphPin* _TargetPin = FindPin(FName(PinName))) { \
+            _TargetPin->DefaultValue = LexToString(Value); \
+        } \
+    } while(0)
 
 /** @brief Sets the default value of an ENUM pin by name */
 #define SET_ENUM_PIN_DEFAULT(PinName, Enum, Value) \
-    if (UEdGraphPin* _TargetPin = FindPin(FName(PinName))) { \
-        if (UEnum* _EnumPtr = StaticEnum<Enum>()) { \
-            _TargetPin->DefaultValue = _EnumPtr->GetNameStringByValue((int64)Value); \
+    do { \
+        if (GraphPin* _TargetPin = FindPin(FName(PinName))) { \
+            if (UEnum* _EnumPtr = StaticEnum<Enum>()) { \
+                _TargetPin->DefaultValue = _EnumPtr->GetNameStringByValue((int64)Value); \
+            } \
         } \
-    }
+    } while(0)
     
 /** @brief Hides a pin if the passed bool is true */
 #define HIDE_PIN_IF(PinName, Condition) \
-    { \
-    if (UEdGraphPin* _TargetPin = FindPin(FName(PinName))) \
-        { \
+    do { \
+        if (GraphPin* _TargetPin = FindPin(FName(PinName))) { \
             _TargetPin->bHidden = (Condition); \
-        }; \
-    };
+        } \
+    } while(0)
 
 /** @brief Hides a pin */
 #define HIDE_PIN(PinName) \
-    { \
-    if (UEdGraphPin* _TargetPin = FindPin(FName(PinName))) \
-        { \
+    do { \
+        if (GraphPin* _TargetPin = FindPin(FName(PinName))) { \
             _TargetPin->bHidden = true; \
-        }; \
-    };
+        } \
+    } while(0)
 
 /** @brief UnHide/Show -Whatever you call it- a Pin */
 #define UNHIDE_PIN(PinName) \
-    { \
-    if (UEdGraphPin* _TargetPin = FindPin(FName(PinName))) \
-        { \
+    do { \
+        if (GraphPin* _TargetPin = FindPin(FName(PinName))) { \
             _TargetPin->bHidden = false; \
-        }; \
-    };
+        } \
+    } while(0)
 
 /** @brief Give the pin a tooltip */
 #define PIN_TOOLTIP(PinName, Tooltip) \
-    { \
-    if (UEdGraphPin* _TargetPin = FindPin(FName(PinName))) \
-        { \
+    do { \
+        if (GraphPin* _TargetPin = FindPin(FName(PinName))) { \
             _TargetPin->PinToolTip = Tooltip; \
-        }; \
-    };
+        } \
+    } while(0)
+
+//==============================================================================
+//  Dynamic Pin Creation (User‑added)
+//==============================================================================
+
+/**
+ * @brief Automatically adds a new pin to the node.
+ * 
+ * It counts existing pins with the same prefix to ensure the index (0, 1, 2...) is correct.
+ */
+#define ADD_USER_PIN(Prefix, Where, Type) \
+    do { \
+        Modify(); \
+        int32 _CurrentCount = 0; \
+        for (GraphPin* _P : Pins) { \
+            if (_P->PinName.ToString().StartsWith(TEXT(Prefix))) _CurrentCount++; \
+        } \
+        FName _NewName = FName(*FString::Printf(TEXT(Prefix "%d"), _CurrentCount)); \
+        CREATE_PIN(Where, Type, _NewName); \
+        GetGraph()->NotifyGraphChanged(); \
+    } while(0)
+
+//==============================================================================
+//  Node Spawning & Internal Node Helpers
+//==============================================================================
 
 /**
  * @brief Creates a "UK2Node_CallFunction*" variable named After the Value you've put in the "NodeVarName".
@@ -225,7 +268,7 @@
  */
 #define ADD_INTERNAL_ASYNC_NODE(NodeVarName, NodeClass, NodeFunction) \
     UK2Node_AsyncAction* NodeVarName = CompilerContext.SpawnIntermediateNode<UK2Node_AsyncAction>(this, SourceGraph); \
-    { \
+    do { \
         struct FAsyncAccess : public UK2Node_AsyncAction { \
             static void Set(UK2Node_AsyncAction* InNode, FName InFunc, UClass* InClass) { \
                 FAsyncAccess* Me = static_cast<FAsyncAccess*>(InNode); \
@@ -235,16 +278,16 @@
             } \
         }; \
         FAsyncAccess::Set(NodeVarName, GET_FUNCTION_NAME_CHECKED(NodeClass, NodeFunction), NodeClass::StaticClass()); \
-    } \
+    } while(0); \
     NodeVarName->AllocateDefaultPins();
 
 /** 
- * @brief Spawns a visble node in the blueprint graph 
+ * @brief Spawns a visible node in the blueprint graph 
  * @note Use in "PostPlacedNewNode"
  */
 #define ADD_VISIBLE_NODE(NodeClass, NodeVarName, OffsetX, OffsetY) \
     NodeClass* NodeVarName = NewObject<NodeClass>(GetGraph()); \
-    NodeVarName->NodePosX = OffsetX;\
+    NodeVarName->NodePosX = OffsetX; \
     NodeVarName->NodePosY = OffsetY; \
     NodeVarName->AllocateDefaultPins(); \
     GetGraph()->AddNode(NodeVarName, true, true);
@@ -269,33 +312,18 @@
  * @note Use In "PostPlacedNewNode"
  */
 #define DELETE_SPAWNER_NODE() \
-    AsyncTask(ENamedThreads::GameThread, [BP = GetBlueprint(), this]() \
-    { \
-        /* Use the 'BP' variable we captured! */ \
-        if (this && BP && this->GetGraph()) \
-        { \
-            FBlueprintEditorUtils::RemoveNode(BP, this, true); \
-            FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(BP); \
-        } \
-    });
+    do { \
+        AsyncTask(ENamedThreads::GameThread, [BP = GetBlueprint(), this]() { \
+            if (this && BP && this->GetGraph()) { \
+                FBlueprintEditorUtils::RemoveNode(BP, this, true); \
+                FBlueprintEditorUtils::MarkBlueprintAsStructurallyModified(BP); \
+            } \
+        }); \
+    } while(0)
 
-
-/**
- * @brief Automatically adds a new pin to the node.
- * 
- * It counts existing pins with the same prefix to ensure the index (0, 1, 2...) is correct.
- */
-#define ADD_USER_PIN(Prefix, Where, Type) \
-    { \
-        Modify(); \
-        int32 _CurrentCount = 0; \
-        for (UEdGraphPin* _P : Pins) { \
-            if (_P->PinName.ToString().StartsWith(TEXT(Prefix))) _CurrentCount++; \
-        } \
-        FName _NewName = FName(*FString::Printf(TEXT(Prefix "%d"), _CurrentCount)); \
-        CREATE_PIN(Where, Type, _NewName); \
-        GetGraph()->NotifyGraphChanged(); \
-    }
+//==============================================================================
+//  Linking & Compiler Helpers
+//==============================================================================
 
 /**
  * @brief This will connect the PN_Execute & PN_Then Execs With the node in the Variable named after the "NodeName" Variable.
@@ -303,72 +331,71 @@
  * @note RECOMMENDATION: you can use the CREATE_STANDARD_EXEC_PINS Macro in the "AllocateDefaultPins" Function, and it will work with this macro.
  */
 #define LINK_STANDARD_EXEC_PINS(NodeVar) \
-    { \
-        UEdGraphPin* _ExecIn = FindPin(K2Pin::PN_Execute); \
-        UEdGraphPin* _ExecOut = FindPin(K2Pin::PN_Then); \
-        UEdGraphPin* _CallExecIn = NodeVar->FindPin(K2Pin::PN_Execute); \
-        UEdGraphPin* _CallExecOut = NodeVar->FindPin(K2Pin::PN_Then); \
-        if (_ExecIn && _CallExecIn) \
-        { \
+    do { \
+        GraphPin* _ExecIn = FindPin(K2Pin::PN_Execute); \
+        GraphPin* _ExecOut = FindPin(K2Pin::PN_Then); \
+        GraphPin* _CallExecIn = NodeVar->FindPin(K2Pin::PN_Execute); \
+        GraphPin* _CallExecOut = NodeVar->FindPin(K2Pin::PN_Then); \
+        if (_ExecIn && _CallExecIn) { \
             CompilerContext.MovePinLinksToIntermediate(*_ExecIn, *_CallExecIn); \
         } \
-        if (_ExecOut && _CallExecOut) \
-        { \
+        if (_ExecOut && _CallExecOut) { \
             CompilerContext.MovePinLinksToIntermediate(*_ExecOut, *_CallExecOut); \
         } \
-    }
+    } while(0)
 
 /** @brief Links the return values from the K2Node with the Internal Node */
 #define LINK_RETURN_VALUES(NodeVar) \
-    { \
-        UEdGraphPin* _InputPin = FindPin(K2Pin::PN_ReturnValue); \
-        UEdGraphPin* _TargetPin = NodeVar->FindPin(K2Pin::PN_ReturnValue); \
-        if (_InputPin && _TargetPin) \
-        { \
+    do { \
+        GraphPin* _InputPin = FindPin(K2Pin::PN_ReturnValue); \
+        GraphPin* _TargetPin = NodeVar->FindPin(K2Pin::PN_ReturnValue); \
+        if (_InputPin && _TargetPin) { \
             CompilerContext.MovePinLinksToIntermediate(*_InputPin, *_TargetPin); \
         } \
-    }
+    } while(0)
 
-/**
- * @brief Connects two pins, one from the node and one from the internal node so the Internal node can use the passed values.
- */
-#define LINK_PIN(NodeVar, K2NodePin, InternalPin) \
-    { \
-        UEdGraphPin* _InputPin = FindPin(FName(K2NodePin)); \
-        UEdGraphPin* _TargetPin = NodeVar->FindPin(FName(InternalPin)); \
-        if (_InputPin && _TargetPin) \
-        { \
+#define MOVE_LINK(NodeVar, K2NodePin, InternalPin) \
+    do { \
+        GraphPin* _InputPin = FindPin(FName(K2NodePin)); \
+        GraphPin* _TargetPin = NodeVar->FindPin(FName(InternalPin)); \
+        if (_InputPin && _TargetPin) { \
             CompilerContext.MovePinLinksToIntermediate(*_InputPin, *_TargetPin); \
         } \
-    }
+    } while(0)
 
-/**
- * @brief Copies connections from a pin to an internal node WITHOUT removing them from the original pin.
- * 
- * Just like when you use the same variable pin on two nodes.
- * 
- * @note WHEN-USE: When multiple internal nodes need to share the same input (like a 'Target' or 'Component' pin).
- * @note NOTE: Use LINK_PIN (Move) for the very last internal node to keep things clean.
- */
-#define SHARE_PIN_LINK(NodeVar, K2NodePin, InternalPin) \
-    { \
-        UEdGraphPin* _InputPin = FindPin(FName(K2NodePin)); \
-        UEdGraphPin* _TargetPin = NodeVar->FindPin(FName(InternalPin)); \
-        if (_InputPin && _TargetPin) \
-        { \
+#define SHARE_LINK(NodeVar, K2NodePin, InternalPin) \
+    do { \
+        GraphPin* _InputPin = FindPin(FName(K2NodePin)); \
+        GraphPin* _TargetPin = NodeVar->FindPin(FName(InternalPin)); \
+        if (_InputPin && _TargetPin) { \
             CompilerContext.CopyPinLinksToIntermediate(*_InputPin, *_TargetPin); \
         } \
-    }
+    } while(0)
+
+#define BREAK_LINK(Pin) \
+    do { \
+        if (GraphPin* _TargetPin = FindPin(Pin)) { \
+            if (const K2Pin* Schema = CompilerContext.GetSchema()) { \
+                Schema->BreakPinLinks(*_TargetPin, true); \
+            } \
+        } \
+    } while(0)
 
 /**
  * @brief Links a pin from an internal node to another pin from an internal node.
  */
 #define LINK_INTERNAL_PIN(NodeA, PinA, NodeB, PinB) \
-    { \
-        UEdGraphPin* _PA = NodeA->FindPin(FName(PinA)); \
-        UEdGraphPin* _PB = NodeB->FindPin(FName(PinB)); \
+    do { \
+        GraphPin* _PA = NodeA->FindPin(FName(PinA)); \
+        GraphPin* _PB = NodeB->FindPin(FName(PinB)); \
         if (_PA && _PB) GetSchema()->TryCreateConnection(_PA, _PB); \
-    }
+    } while(0)
+
+#define BREAK_INTERNAL_LINK(Pin) \
+    do { \
+        GraphPin* _PA = NodeA->FindPin(FName(PinA)); \
+        if (_PA && _PB) GetSchema()->TryCreateConnection(_PA, _PB); \
+    } while(0)
 
 /**
  * @brief Links the pins the user creates with "AddInputPin()" to an Array input on an internal node.
@@ -376,7 +403,7 @@
  * @note REQUIRES: "K2Node_MakeArray.h"
  */
 #define LINK_USER_PINS(InternalNode, TargetPin, Prefix) \
-    { \
+    do { \
         UK2Node_MakeArray* _TmpArr = CompilerContext.SpawnIntermediateNode<UK2Node_MakeArray>(this, SourceGraph); \
         _TmpArr->AllocateDefaultPins(); \
         int32 _Idx = 0; \
@@ -391,10 +418,15 @@
         if (UEdGraphPin* _OutArr = _TmpArr->GetOutputPin()) { \
             GetSchema()->TryCreateConnection(_OutArr, InternalNode->FindPinChecked(FName(TargetPin))); \
         } \
-    }
+    } while(0)
+
+//==============================================================================
+//  GUID Utilities
+//==============================================================================
 
 /** @brief Gets & Declare the K2Node GUID and convert it to a string */
-#define GET_K2NODE_GUID(GUID_VarName) FString GUID_VarName = NodeGuid.ToString();
+#define GET_K2NODE_GUID(GUID_VarName) \
+    FString GUID_VarName = NodeGuid.ToString();
 
 /**
  * @brief Injects this K2Node's unique GUID into a pin on an internal node.
@@ -403,14 +435,13 @@
  * @note SECOND-NOTE: it doesn't need the DECLARE_K2_GUID macro, but you can use it if you want to store the GUID in a variable for later use.
  */
 #define INJECT_K2NODE_GUID(NodeVar, TargetPinName) \
-    { \
+    do { \
         FString _InternalGuid = NodeGuid.ToString(); \
         UEdGraphPin* _GPin = NodeVar->FindPin(FName(TargetPinName)); \
-        if (_GPin) \
-        { \
+        if (_GPin) { \
             _GPin->DefaultValue = _InternalGuid; \
         } \
-    }
+    } while(0)
 
 /**
  * 3zgol? 🦜
