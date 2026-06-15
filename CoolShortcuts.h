@@ -1,4 +1,4 @@
-    // Copyright (c) 2026 Fahd-Dev.
+// Copyright (c) 2026 Fahd-Dev.
 // Library Version: UE5.7 | v0.0.1 Alpha
 // Github: https://github.com/Fahd-Dev/Cool-K2Node-Shortcuts
 
@@ -363,7 +363,7 @@
         } \
     } while(0)
 
-#define SHARE_LINK(NodeVar, K2NodePin, InternalPin) \
+#define COPY_LINK(NodeVar, K2NodePin, InternalPin) \
     do { \
         GraphPin* _InputPin = FindPin(FName(K2NodePin)); \
         GraphPin* _TargetPin = NodeVar->FindPin(FName(InternalPin)); \
@@ -391,14 +391,10 @@
         if (_PA && _PB) GetSchema()->TryCreateConnection(_PA, _PB); \
     } while(0)
 
-#define BREAK_INTERNAL_LINK(NodeA, PinA, NodeB, PinB) \
+#define BREAK_INTERNAL_LINK(Pin) \
     do { \
-        UEdGraphPin* _PinA = (NodeA)->FindPin(FName(PinA)); \
-        UEdGraphPin* _PinB = (NodeB)->FindPin(FName(PinB)); \
-        if (_PinA && _PinB && _PinA->LinkedTo.Contains(_PinB)) { \
-            const UEdGraphSchema* _Schema = (NodeA)->GetSchema(); \
-            if (_Schema) _Schema->BreakSinglePinLink(_PinA, _PinB); \
-        } \
+        GraphPin* _PA = NodeA->FindPin(FName(PinA)); \
+        if (_PA && _PB) GetSchema()->TryCreateConnection(_PA, _PB); \
     } while(0)
 
 /**
