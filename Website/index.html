@@ -1,0 +1,339 @@
+<!-- Copyright (c) 2026 Fahd-Dev. -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K2Node Interface | Fahd-Dev</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=Fira+Code&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --bg: #050508; 
+            --panel: #11111d; 
+            --accent: #6366f1; 
+            --input-bg: #1a1a2e; 
+            color-scheme: dark; 
+        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #fff; overflow-x: hidden; }
+        .code-font { font-family: 'Fira Code', monospace; }
+        .glass { background: #11111d; border: 1px solid rgba(255,255,255,0.05); }
+        .input-style { background: var(--input-bg); border: 1px solid #2d2d44; border-radius: 6px; padding: 0.7rem; width: 100%; color: #e2e8f0; font-size: 0.85rem; transition: 0.2s; }
+        .input-style:focus { outline: none; border-color: var(--accent); background: #1e1e3a; }
+        .tab-active { background: #1a1a2e; color: var(--accent); border: 1px solid rgba(99,102,241,0.3); }
+        .shortcut-link { color: #6366f1; text-decoration: none; transition: 0.2s; }
+        .shortcut-link:hover { color: #898bff; opacity: 1; }
+        input[type="checkbox"] { accent-color: var(--accent); cursor: pointer; width: 1rem; height: 1rem; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-thumb { background: #2d2d44; border-radius: 10px; }
+        
+        input[type="color"] { border: none; width: 32px; height: 32px; border-radius: 6px; background: none; cursor: pointer; padding: 0; }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; }
+
+        .copy-popup {
+            position: absolute;
+            bottom: 125%;
+            left: 50%;
+            transform: translateX(-50%) translateY(5px);
+            background: #2d2d44;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            white-space: nowrap;
+        }
+        .copy-popup.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .copy-popup::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #2d2d44 transparent transparent transparent;
+        }
+    </style>
+</head>
+<body class="p-8 lg:p-12">
+    <div class="max-w-[1600px] mx-auto">
+        <header class="flex justify-between items-start mb-12">
+            <div class="flex gap-4">
+                <div class="w-14 h-14 bg-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <svg class="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"/>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-4xl font-bold tracking-tight leading-none text-white">K2Node <span class="text-indigo-400">Interface</span></h1>
+                    <h2 class="text-slate-500 text-[10px] mt-2 tracking-[0.3em] uppercase opacity-70">By <span class="text-slate-200 font-bold">Fahd-Dev</span></h2>
+                    <p class="text-slate-500 text-sm mt-3 font-medium">Generate a K2Node Interface With <a href="https://github.com/Fahd-Dev/Cool-K2Node-Shortcuts" target="_blank" class="shortcut-link">Cool-K2Node-Shortcuts</a></p>
+                </div>
+            </div>
+            <button onclick="exportSourceFiles()" class="bg-indigo-600 hover:bg-indigo-500 px-8 py-3 rounded-xl font-bold flex items-center gap-2 transition-all shadow-lg shadow-indigo-500/20 active:scale-95">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                Export Source Files (.zip)
+            </button>
+        </header>
+
+        <div class="grid lg:grid-cols-12 gap-8">
+            <div class="lg:col-span-4 space-y-6">
+                <section class="glass p-8 rounded-2xl shadow-2xl">
+                    <h3 class="text-indigo-400 text-xs font-bold uppercase tracking-widest mb-6">Global Configuration</h3>
+                    
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div class="space-y-1">
+                            <label class="text-[10px] text-slate-500 uppercase font-bold">Class Name</label>
+                            <input type="text" id="inputClassName" placeholder="MyNode" class="input-style" oninput="refreshGenerator()">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] text-slate-500 uppercase font-bold">Category</label>
+                            <input type="text" id="inputCategory" placeholder="Uncategorized" class="input-style" oninput="refreshGenerator()">
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="space-y-1">
+                            <label class="text-[10px] text-slate-500 uppercase font-bold">Node Title</label>
+                            <input type="text" id="inputNodeTitle" placeholder="My Custom Node" class="input-style" oninput="refreshGenerator()">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] text-slate-500 uppercase font-bold">Tooltip Description</label>
+                            <textarea id="inputTooltip" rows="3" placeholder="Description..." class="input-style" oninput="refreshGenerator()"></textarea>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] text-slate-500 uppercase font-bold">Search Keywords</label>
+                            <input type="text" id="inputKeywords" placeholder="logic, math, helper" class="input-style" oninput="refreshGenerator()">
+                        </div>
+                    </div>
+                    
+                    <div class="flex flex-col gap-4 mt-6 pt-6 border-t border-white/5">
+                        <label class="flex items-center gap-3 text-xs text-slate-400 cursor-pointer hover:text-slate-200 transition-colors">
+                            <input type="checkbox" id="checkStdExec" onchange="refreshGenerator()" checked> Standard Exec Pins
+                        </label>
+                        <label class="flex items-center gap-3 text-xs text-slate-400 cursor-pointer hover:text-slate-200 transition-colors">
+                            <input type="checkbox" id="checkIsPure" onchange="refreshGenerator()"> Pure
+                        </label>
+                        <label class="flex items-center gap-3 text-xs text-slate-400 cursor-pointer hover:text-slate-200 transition-colors">
+                            <input type="checkbox" id="checkIsCompact" onchange="refreshGenerator()"> Compact
+                        </label>
+                        
+                        <div class="space-y-3">
+                            <label class="flex items-center gap-3 text-xs text-slate-400 cursor-pointer hover:text-slate-200 transition-colors">
+                                <input type="checkbox" id="checkUseCustomColor" onchange="toggleColorPickerVisibility()"> Custom Title Color
+                            </label>
+                            <div id="colorPickerContainer" class="hidden flex items-center gap-4 bg-[#1a1a2e] p-3 rounded-lg border border-[#2d2d44]">
+                                <input type="color" id="inputTitleColor" value="#6366f1" oninput="refreshGenerator()">
+                                <span id="labelHexCode" class="text-[11px] code-font text-slate-400 uppercase tracking-wider">#6366f1</span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="glass p-8 rounded-2xl shadow-2xl">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-emerald-400 text-xs font-bold uppercase tracking-widest">Node Pins</h3>
+                        <button onclick="addNewPin()" class="bg-emerald-500/10 text-emerald-400 text-[10px] font-bold px-3 py-1 rounded-md border border-emerald-500/20 uppercase hover:bg-emerald-500 hover:text-white transition-all">+ Add Pin</button>
+                    </div>
+                    <div id="pinsListContainer" class="space-y-4"></div>
+                </section>
+            </div>
+
+            <div class="lg:col-span-8 glass rounded-3xl overflow-hidden flex flex-col shadow-2xl">
+                <div class="flex bg-[#0a0a14] p-2 gap-2">
+                    <button id="btnTabHeader" onclick="switchTab('header')" class="flex-1 py-3 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all tab-active">Header File</button>
+                    <button id="btnTabSource" onclick="switchTab('source')" class="flex-1 py-3 text-[10px] font-bold uppercase tracking-widest rounded-xl text-slate-500 transition-all">Source File</button>
+                </div>
+                <div class="relative flex-grow">
+                    <textarea id="previewHeader" class="w-full h-[850px] p-10 code-font text-[13px] bg-transparent outline-none text-slate-300 resize-none" readonly spellcheck="false"></textarea>
+                    <textarea id="previewSource" class="w-full h-[850px] p-10 code-font text-[13px] bg-transparent outline-none text-slate-300 hidden resize-none" readonly spellcheck="false"></textarea>
+                    
+                    <div class="absolute top-6 right-6">
+                        <span id="copyPopup" class="copy-popup">Copied!</span>
+                        <button onclick="copyToClipboard()" class="p-2 bg-white/5 hover:bg-indigo-500/20 rounded-lg text-[10px] uppercase font-bold px-4 border border-white/10 transition-all">Copy Code</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentTab = 'header';
+        const getEl = id => document.getElementById(id);
+
+        const switchTab = (tabName) => {
+            currentTab = tabName;
+            const isHeader = tabName === 'header';
+            getEl('previewHeader').classList.toggle('hidden', !isHeader); 
+            getEl('previewSource').classList.toggle('hidden', isHeader);
+            getEl('btnTabHeader').className = `flex-1 py-3 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all ${isHeader ? 'tab-active' : 'text-slate-500'}`;
+            getEl('btnTabSource').className = `flex-1 py-3 text-[10px] font-bold uppercase tracking-widest rounded-xl transition-all ${!isHeader ? 'tab-active' : 'text-slate-500'}`;
+        };
+
+        const toggleColorPickerVisibility = () => {
+            const isChecked = getEl('checkUseCustomColor').checked;
+            getEl('colorPickerContainer').classList.toggle('hidden', !isChecked);
+            refreshGenerator();
+        };
+
+        const hexToUnrealLinearColor = (hex) => {
+            const r = parseInt(hex.slice(1, 3), 16) / 255;
+            const g = parseInt(hex.slice(3, 5), 16) / 255;
+            const b = parseInt(hex.slice(5, 7), 16) / 255;
+            return `FLinearColor(${r.toFixed(3)}f, ${g.toFixed(3)}f, ${b.toFixed(3)}f)`;
+        };
+
+        const createPinMarkup = (data = {}) => `
+            <div class="pin-card bg-[#1a1a2e]/60 p-5 rounded-xl border border-white/5 flex gap-4 items-start group relative transition-all hover:border-white/10">
+                <div class="drag-handle mt-6 cursor-grab text-slate-600 select-none hover:text-indigo-400">⠿</div>
+                <div class="flex-grow grid grid-cols-2 gap-x-4 gap-y-3">
+                    <div class="space-y-1">
+                        <label class="text-[9px] text-slate-500 uppercase font-bold tracking-tight">Method</label>
+                        <select class="pin-method input-style !p-2 text-xs" onchange="refreshGenerator()">
+                            <option value="CREATE_PIN" ${data.method==='CREATE_PIN'?'selected':''}>Standard Pin</option>
+                            <option value="CREATE_STRUCT_PIN" ${data.method==='CREATE_STRUCT_PIN'?'selected':''}>Struct Pin</option>
+                            <option value="CREATE_OBJECT_PIN" ${data.method==='CREATE_OBJECT_PIN'?'selected':''}>Object Pin</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[9px] text-slate-500 uppercase font-bold tracking-tight">Direction</label>
+                        <select class="pin-direction input-style !p-2 text-xs" onchange="refreshGenerator()">
+                            <option value="Input" ${data.direction==='Input'?'selected':''}>Input</option>
+                            <option value="Output" ${data.direction==='Output'?'selected':''}>Output</option>
+                        </select>
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[9px] text-slate-500 uppercase font-bold tracking-tight">Name</label>
+                        <input type="text" class="pin-name input-style !p-2 text-xs" placeholder="Pin Name" value="${data.name||''}" oninput="refreshGenerator()">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[9px] text-slate-500 uppercase font-bold tracking-tight">Type</label>
+                        <input type="text" class="pin-type input-style !p-2 text-xs" placeholder="PC_Boolean" value="${data.type||''}" oninput="refreshGenerator()">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[9px] text-slate-500 uppercase font-bold tracking-tight">Tooltip</label>
+                         <input type="text" class="pin-tooltip input-style !p-2 text-xs" placeholder="Description" value="${data.tooltip||''}" oninput="refreshGenerator()">
+                    </div>
+                    <div class="space-y-1">
+                        <label class="text-[9px] text-slate-500 uppercase font-bold tracking-tight">Hide If</label>
+                         <input type="text" class="pin-hide-condition input-style !p-2 text-xs" placeholder="Condition" value="${data.hideCondition||''}" oninput="refreshGenerator()">
+                    </div>
+                </div>
+                <button onclick="this.closest('.pin-card').remove();refreshGenerator()" class="absolute top-4 right-4 text-slate-600 hover:text-red-500 transition-colors">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>`;
+
+        const addNewPin = (data) => { 
+            getEl('pinsListContainer').insertAdjacentHTML('beforeend', createPinMarkup(data)); 
+            refreshGenerator(); 
+        };
+
+        function refreshGenerator() {
+            const hexColor = getEl('inputTitleColor').value;
+            getEl('labelHexCode').innerText = hexColor;
+
+            const config = {
+                className: getEl('inputClassName').value || 'MyNode', 
+                nodeTitle: getEl('inputNodeTitle').value || 'My Custom Node',
+                tooltip: getEl('inputTooltip').value || 'Description...', 
+                category: getEl('inputCategory').value || 'Uncategorized', 
+                keywords: getEl('inputKeywords').value || '',
+                useStdExec: getEl('checkStdExec').checked, 
+                isPure: getEl('checkIsPure').checked, 
+                isCompact: getEl('checkIsCompact').checked,
+                useCustomColor: getEl('checkUseCustomColor').checked, 
+                titleColorHex: hexColor,
+                pins: Array.from(document.querySelectorAll('.pin-card')).map(card => ({
+                    method: card.querySelector('.pin-method').value, 
+                    direction: card.querySelector('.pin-direction').value, 
+                    name: card.querySelector('.pin-name').value, 
+                    type: card.querySelector('.pin-type').value, 
+                    tooltip: card.querySelector('.pin-tooltip').value, 
+                    hideCondition: card.querySelector('.pin-hide-condition').value
+                }))
+            };
+
+            sessionStorage.setItem('k2NodeData', JSON.stringify(config));
+            
+            let headerMacros = "";
+            if (config.isPure) headerMacros += "    MAKE_K2NODE_PURE()\n";
+            if (config.isCompact) headerMacros += "    MAKE_K2NODE_COMPACT()\n";
+            if (config.useCustomColor) headerMacros += `    K2NODE_TITLE_COLOR(${hexToUnrealLinearColor(config.titleColorHex)})\n`;
+
+            let pinMacros = "";
+            if (config.useStdExec) pinMacros += "    CREATE_STANDARD_EXEC_PINS();\n";
+            
+            config.pins.forEach(pin => {
+                if (pin.name) {
+                    pinMacros += `    ${pin.method}(${pin.direction}, ${pin.type || 'PC_Real'}, TEXT("${pin.name}"));\n`;
+                    if (pin.tooltip) pinMacros += `    PIN_TOOLTIP(TEXT("${pin.name}"), TEXT("${pin.tooltip}"));\n`;
+                    if (pin.hideCondition) pinMacros += `    HIDE_PIN_IF(TEXT("${pin.name}"), ${pin.hideCondition});\n`;
+                }
+            });
+
+            getEl('previewHeader').value = `// Your Copyright Notice Here\n\n#pragma once\n\n#include "CoreMinimal.h"\n#include "K2Node.h"\n#include "CoolShortcuts.h"\n#include "K2Node_${config.className}.generated.h"\n\nUCLASS()\nclass UK2Node_${config.className} : public UK2Node\n{\n    GENERATED_BODY()\n\npublic:\n    virtual void AllocateDefaultPins() override;\n    virtual void ExpandNode(class FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph) override;\n\n${headerMacros}    DECLARE_K2NODE_ONLY()\n    K2NODE_KEYWORD("${config.keywords}")\n};`;
+            
+            getEl('previewSource').value = `// Your Copyright Notice Here\n\n#include "K2Node_${config.className}.h"\n#include "KismetCompiler.h"\n#include "BlueprintNodeSpawner.h"\n#include "BlueprintActionDatabaseRegistrar.h"\n\nIMPLEMENT_K2NODE_ONLY(UK2Node_${config.className}, "${config.nodeTitle}", "${config.tooltip}", "${config.category}")\n\nvoid UK2Node_${config.className}::AllocateDefaultPins()\n{\n    Super::AllocateDefaultPins();\n\n${pinMacros || '    // Define pins here'}\n}\n\nvoid UK2Node_${config.className}::ExpandNode(FKismetCompilerContext& CompilerContext, UEdGraph* SourceGraph)\n{\n    Super::ExpandNode(CompilerContext, SourceGraph);\n\n    // Node expansion logic here\n}`;
+        }
+
+        const copyToClipboard = () => { 
+            const targetArea = currentTab === 'header' ? getEl('previewHeader') : getEl('previewSource'); 
+            navigator.clipboard.writeText(targetArea.value); 
+            
+            const popup = getEl('copyPopup');
+            popup.classList.add('show');
+            setTimeout(() => {
+                popup.classList.remove('show');
+            }, 2000);
+        };
+        
+        async function exportSourceFiles() {
+            const zip = new JSZip();
+            const className = getEl('inputClassName').value || 'MyNode';
+            zip.file(`K2Node_${className}.h`, getEl('previewHeader').value);
+            zip.file(`K2Node_${className}.cpp`, getEl('previewSource').value);
+            const content = await zip.generateAsync({type: "blob"});
+            const downloadLink = document.createElement('a');
+            downloadLink.href = URL.createObjectURL(content);
+            downloadLink.download = `${className}_Source.zip`;
+            downloadLink.click();
+        }
+
+        window.onload = () => {
+            Sortable.create(getEl('pinsListContainer'), { animation: 150, handle: '.drag-handle', onEnd: refreshGenerator });
+            const savedData = sessionStorage.getItem('k2NodeData');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                getEl('inputClassName').value = data.className || ''; 
+                getEl('inputNodeTitle').value = data.nodeTitle || ''; 
+                getEl('inputTooltip').value = data.tooltip || ''; 
+                getEl('inputCategory').value = data.category || ''; 
+                getEl('inputKeywords').value = data.keywords || '';
+                getEl('checkStdExec').checked = data.useStdExec ?? true; 
+                getEl('checkIsPure').checked = data.isPure || false; 
+                getEl('checkIsCompact').checked = data.isCompact || false;
+                getEl('checkUseCustomColor').checked = data.useCustomColor || false;
+                getEl('inputTitleColor').value = data.titleColorHex || '#6366f1';
+                toggleColorPickerVisibility();
+                if (data.pins && data.pins.length > 0) data.pins.forEach(addNewPin); else addNewPin();
+            } else {
+                addNewPin();
+            }
+            refreshGenerator();
+        };
+    </script>
+</body>
+</html>
